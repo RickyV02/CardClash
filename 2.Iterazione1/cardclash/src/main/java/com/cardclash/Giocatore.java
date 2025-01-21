@@ -1,7 +1,7 @@
 package com.cardclash;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Giocatore {
 
@@ -10,7 +10,7 @@ public class Giocatore {
     private final String password;
     private String nickname;
     private Mazzo mazzoCorrente;
-    private final LinkedList<Mazzo> mazziGiocatore;
+    private final HashMap<Integer, Mazzo> mazziGiocatore;
 
     // Costruttore
     public Giocatore(String nome, String email, String password, String nickname) {
@@ -18,7 +18,7 @@ public class Giocatore {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
-        this.mazziGiocatore = new LinkedList<>();
+        this.mazziGiocatore = new HashMap<>();
     }
 
     // Getter per l'email
@@ -47,19 +47,13 @@ public class Giocatore {
     }
 
     // Metodo per aggiungere un mazzo
-    public void aggiungiMazzo(Mazzo mazzo) {
-        if (!mazziGiocatore.contains(mazzo)) {
-            mazziGiocatore.add(mazzo);
-        }
+    public void aggiungiMazzo(Integer codice, Mazzo mazzo) {
+        mazziGiocatore.put(codice, mazzo);
     }
 
     // Metodo per impostare il mazzo corrente
     public void setMazzoCorrente(Mazzo mazzo) {
-        if (mazziGiocatore.contains(mazzo)) {
-            this.mazzoCorrente = mazzo;
-        } else {
-            System.out.println("Il mazzo non appartiene al giocatore.");
-        }
+        mazzoCorrente = mazzo;
     }
 
     // Getter per il mazzo corrente
@@ -68,7 +62,7 @@ public class Giocatore {
     }
 
     // Metodo per ottenere tutti i mazzi del giocatore
-    public List<Mazzo> getMazziGiocatore() {
+    public Map<Integer, Mazzo> getMazziGiocatore() {
         return mazziGiocatore;
     }
 
