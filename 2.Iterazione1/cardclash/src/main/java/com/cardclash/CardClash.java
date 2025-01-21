@@ -59,7 +59,7 @@ public class CardClash {
     }
 
     public void registraGiocatore(String nome, String mail, String password, String nickname) {
-        /*Estensione 1.A del caso d'uso UC2 */
+        /* Estensione 1.A del caso d'uso UC2 */
         try {
             if (giocatori.containsKey(mail)) {
                 throw new Exception("Giocatore già registrato.");
@@ -145,4 +145,11 @@ public class CardClash {
         giocatoreCorrente = g;
     }
 
+    public Map<Integer, FormatoTorneo> getFormati() {
+        return formati;
+    }
+
+    public Torneo getTorneoCorrente() {
+        return torneoCorrente;
+    }
 }
