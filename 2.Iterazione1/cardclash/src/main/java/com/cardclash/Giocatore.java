@@ -1,16 +1,16 @@
 package com.cardclash;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Giocatore {
 
     private String nome;
-    private String email;
-    private String password;
+    private final String email;
+    private final String password;
     private String nickname;
     private Mazzo mazzoCorrente;
-    private List<Mazzo> mazziGiocatore; // Usato List per gestire i mazzi dinamicamente
+    private final LinkedList<Mazzo> mazziGiocatore;
 
     // Costruttore
     public Giocatore(String nome, String email, String password, String nickname) {
@@ -18,7 +18,7 @@ public class Giocatore {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
-        this.mazziGiocatore = new ArrayList<>();
+        this.mazziGiocatore = new LinkedList<>();
     }
 
     // Getter per l'email
