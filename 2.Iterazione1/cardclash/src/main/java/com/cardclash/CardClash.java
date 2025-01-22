@@ -1,6 +1,11 @@
 package com.cardclash;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class CardClash {
 
@@ -39,7 +44,7 @@ public class CardClash {
         return cardClash;
     }
 
-    public void creaTorneo(String nome, Date data,String orario, String luogo) {
+    public void creaTorneo(String nome, Date data, String orario, String luogo) {
         this.torneoCorrente = new Torneo(nome, data, orario, luogo);
         System.out.println("Torneo creato: " + torneoCorrente.getNome());
     }
@@ -54,71 +59,99 @@ public class CardClash {
 
     public void confermaCreazione() {
         this.torneoCorrente.setCodice();
-        Integer code=this.torneoCorrente.getCodice();
+        Integer code = this.torneoCorrente.getCodice();
         this.tornei.put(code, torneoCorrente);
     }
 
-    public void registraGiocatore(String nome, String mail, String password, String nickname) {
+    public void registraGiocatore(String nome, String mail, String password, String nickname) throws GiocatoreGiaRegistratoException {
+        /* Estensione 1.A del caso d'uso UC2 */
         if (giocatori.containsKey(mail)) {
-            throw new IllegalArgumentException("Giocatore già registrato con questa email.");
+            throw new GiocatoreGiaRegistratoException("Giocatore già registrato con l'email: " + mail);
         }
-        Giocatore nuovoGiocatore = new Giocatore(nome, mail, password, nickname);
-        giocatori.put(mail, nuovoGiocatore);
-        this.giocatoreCorrente = nuovoGiocatore;
+        this.giocatoreCorrente = new Giocatore(nome, mail, password, nickname);
     }
+
 
     // Metodo per confermare la registrazione di un giocatore
     public void confermaRegistrazione() {
-        if (giocatoreCorrente != null) {
-            System.out.println("Registrazione confermata per: " + giocatoreCorrente.getNome());
-        } else {
-            System.out.println("Nessun giocatore da confermare.");
-        }
+        String mail = giocatoreCorrente.getEmail();
+        giocatori.put(mail, giocatoreCorrente);
     }
 
     // Metodo per mostrare tornei disponibili
     public void mostraTorneiDisponibili() {
-        tornei.values().stream()
-            .filter(Torneo::isAperto)
-            .forEach(torneo -> System.out.println("Torneo disponibile: " + torneo.getNome()));
+        List<Torneo> elencoTornei = getTornei();
+        for (Iterator<Torneo> iterator = elencoTornei.iterator(); iterator.hasNext();) {
+            Torneo t = iterator.next();
+            if (!t.isAperto())
+                iterator.remove();
+        }
+        System.out.println("Tornei disponibili:" + elencoTornei.toString());
+    }
+
+    public List<Torneo> getTornei() {
+        List<Torneo> elencoTornei = new ArrayList<>();
+        elencoTornei.addAll(tornei.values());
+        return elencoTornei;
     }
 
     // Metodo per selezionare un torneo
-    public void selezionaTorneo(int codTorneo) {
-        if (!tornei.containsKey(codTorneo)) {
-            throw new IllegalArgumentException("Torneo non trovato.");
-        }
-        torneoCorrente = tornei.get(codTorneo);
-        System.out.println("Torneo selezionato: " + torneoCorrente.getNome());
+    public void selezionaTorneo(Integer codTorneo) {
+        Torneo t = tornei.get(codTorneo);
+        setTorneoCorrente(t);
     }
 
     // Metodo per inserire un mazzo
     public void inserimentoMazzo(String nome) {
         if (giocatoreCorrente == null) {
-            throw new IllegalStateException("Nessun giocatore corrente.");
+            System.out.println("Nessun giocatore selezionato.");
         }
         Mazzo nuovoMazzo = new Mazzo(nome);
-        giocatoreCorrente.aggiungiMazzo(nuovoMazzo);
-        System.out.println("Mazzo inserito per " + giocatoreCorrente.getNome() + ": " + nome);
-    }
-
-    // Metodo per selezionare un tipo di mazzo
-    public void selezionaTipo(int codice) {
-        if (torneoCorrente == null) {
-            throw new IllegalStateException("Nessun torneo selezionato.");
-        }
-        Map<Integer, TipoMazzo> tipiConsentiti = torneoCorrente.getFormato().getTipiMazzo();
-        if (!tipiConsentiti.containsKey(codice)) {
-            throw new IllegalArgumentException("Tipo mazzo non consentito.");
-        }
-        System.out.println("Tipo mazzo selezionato: " + tipiConsentiti.get(codice).getNome());
+        nuovoMazzo.setCodice();
+        giocatoreCorrente.setMazzoCorrente(nuovoMazzo);
     }
 
     // Metodo per ottenere tipi di mazzi consentiti
     public Map<Integer, TipoMazzo> getTipiMazziConsentiti() {
         if (torneoCorrente == null) {
-            throw new IllegalStateException("Nessun torneo selezionato.");
+            System.out.println("Nessun torneo selezionato.");
         }
-        return torneoCorrente.getFormato().getTipiMazzo();
+        FormatoTorneo f = torneoCorrente.getFormato();
+        return f.getTipiMazzo();
+    }
+
+    public void selezionaTipo(Integer codice) {
+        if (torneoCorrente == null) {
+            System.out.println("Nessun torneo selezionato.");
+        }
+        Map<Integer, TipoMazzo> tipiMazziConsentiti = getTipiMazziConsentiti();
+        TipoMazzo tm = tipiMazziConsentiti.get(codice);
+        Mazzo m = giocatoreCorrente.getMazzoCorrente();
+        m.setTipo(tm);
+    }
+
+    public void confermaIscrizione() {
+        Mazzo m = giocatoreCorrente.getMazzoCorrente();
+        Integer codice = m.getCodice();
+        giocatoreCorrente.aggiungiMazzo(codice, m);
+        torneoCorrente.aggiungiMazzo(codice, m);
+        String email = giocatoreCorrente.getEmail();
+        torneoCorrente.aggiungiGiocatore(email, giocatoreCorrente);
+    }
+
+    public void setTorneoCorrente(Torneo t) {
+        torneoCorrente = t;
+    }
+
+    public void setGiocatoreCorrente(Giocatore g) {
+        giocatoreCorrente = g;
+    }
+
+    public Map<Integer, FormatoTorneo> getFormati() {
+        return formati;
+    }
+
+    public Torneo getTorneoCorrente() {
+        return torneoCorrente;
     }
 }

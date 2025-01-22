@@ -6,13 +6,13 @@ import java.util.Map;
 
 public class FormatoTorneo {
 
-    private int codice;
+    private Integer codice;
     private String nome;
     private String gioco;
     private final Map<Integer, TipoMazzo> tipiMazzo;
 
     // Costruttore
-    public FormatoTorneo(int codice, String nome, String gioco) {
+    public FormatoTorneo(Integer codice, String nome, String gioco) {
         this.codice = codice;
         this.nome = nome;
         this.gioco = gioco;
@@ -48,12 +48,12 @@ public class FormatoTorneo {
     }
 
     // Getter per il codice
-    public int getCodice() {
+    public Integer getCodice() {
         return codice;
     }
 
     // Setter per il codice
-    public void setCodice(int codice) {
+    public void setCodice(Integer codice) {
         this.codice = codice;
     }
 
