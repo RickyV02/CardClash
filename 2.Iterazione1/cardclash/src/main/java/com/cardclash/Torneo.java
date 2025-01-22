@@ -82,6 +82,14 @@ public class Torneo {
         return giocatori.get(email);
     }
 
+    public Map<String, Giocatore> getGiocatori() {
+        return giocatori;
+    }
+
+    public Map<Integer, Mazzo> getMazzi() {
+        return mazziTorneo;
+    }
+
     // Metodo per ottenere un mazzo dato il codice
     public Mazzo getMazzo(Integer codice) {
         return mazziTorneo.get(codice);
@@ -89,15 +97,15 @@ public class Torneo {
 
     @Override
     public String toString() {
-        return "Torneo{" +
-                "codice=" + codice +
-                ", nome='" + nome + '\'' +
-                ", data=" + data +
-                ", orario='" + orario + '\'' +
-                ", luogo='" + luogo + '\'' +
-                ", numero giocatori=" + giocatori.size() +
-                ", numero mazzi=" + mazziTorneo.size() +
-                ", formato=" + formato.getNome() +
-                '}';
+        return "Torneo{"
+                + "codice=" + codice
+                + ", nome='" + nome + '\''
+                + ", data=" + data
+                + ", orario='" + orario + '\''
+                + ", luogo='" + luogo + '\''
+                + ", numero giocatori=" + giocatori.size()
+                + ", numero mazzi=" + mazziTorneo.size()
+                + ", formato=" + formato.getNome()
+                + '}';
     }
 }

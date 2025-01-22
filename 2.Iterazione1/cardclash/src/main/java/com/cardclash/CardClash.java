@@ -51,8 +51,8 @@ public class CardClash {
 
     public void selezionaFormato(Integer codice) {
         FormatoTorneo f = formati.get(codice);
-        System.out.println("Formato selezionato: " + f.toString());
         if (f != null) {
+            System.out.println("Formato selezionato: " + f.toString());
             torneoCorrente.setFormato(f);
         }
     }
@@ -71,20 +71,18 @@ public class CardClash {
         this.giocatoreCorrente = new Giocatore(nome, mail, password, nickname);
     }
 
-
-    // Metodo per confermare la registrazione di un giocatore
     public void confermaRegistrazione() {
         String mail = giocatoreCorrente.getEmail();
         giocatori.put(mail, giocatoreCorrente);
     }
 
-    // Metodo per mostrare tornei disponibili
     public void mostraTorneiDisponibili() {
         List<Torneo> elencoTornei = getTornei();
         for (Iterator<Torneo> iterator = elencoTornei.iterator(); iterator.hasNext();) {
             Torneo t = iterator.next();
-            if (!t.isAperto())
+            if (!t.isAperto()) {
                 iterator.remove();
+            }
         }
         System.out.println("Tornei disponibili:" + elencoTornei.toString());
     }
@@ -95,13 +93,11 @@ public class CardClash {
         return elencoTornei;
     }
 
-    // Metodo per selezionare un torneo
     public void selezionaTorneo(Integer codTorneo) {
         Torneo t = tornei.get(codTorneo);
         setTorneoCorrente(t);
     }
 
-    // Metodo per inserire un mazzo
     public void inserimentoMazzo(String nome) {
         if (giocatoreCorrente == null) {
             System.out.println("Nessun giocatore selezionato.");
@@ -111,7 +107,6 @@ public class CardClash {
         giocatoreCorrente.setMazzoCorrente(nuovoMazzo);
     }
 
-    // Metodo per ottenere tipi di mazzi consentiti
     public Map<Integer, TipoMazzo> getTipiMazziConsentiti() {
         if (torneoCorrente == null) {
             System.out.println("Nessun torneo selezionato.");
@@ -153,5 +148,13 @@ public class CardClash {
 
     public Torneo getTorneoCorrente() {
         return torneoCorrente;
+    }
+
+    public Map<String, Giocatore> getGiocatori() {
+        return giocatori;
+    }
+
+    public Giocatore getGiocatoreCorrente() {
+        return giocatoreCorrente;
     }
 }
