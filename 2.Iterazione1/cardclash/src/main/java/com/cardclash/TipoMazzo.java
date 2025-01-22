@@ -2,22 +2,22 @@ package com.cardclash;
 
 public class TipoMazzo {
 
-    private int codice;
+    private Integer codice;
     private String nome;
 
     // Costruttore
-    public TipoMazzo(int codice, String nome) {
+    public TipoMazzo(Integer codice, String nome) {
         this.codice = codice;
         this.nome = nome;
     }
 
     // Getter per il codice
-    public int getCodice() {
+    public Integer getCodice() {
         return codice;
     }
 
     // Setter per il codice
-    public void setCodice(int codice) {
+    public void setCodice(Integer codice) {
         this.codice = codice;
     }
 

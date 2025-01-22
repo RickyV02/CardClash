@@ -4,10 +4,12 @@ import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
 import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 public class Torneo {
 
-    private int codice;
+    private Integer codice;
     private final String nome;
     private final Date data;
     private final String orario;
@@ -36,7 +38,7 @@ public class Torneo {
     }
 
     // Getter per il codice
-    public int getCodice() {
+    public Integer getCodice() {
         return codice;
     }
 
@@ -54,24 +56,24 @@ public class Torneo {
         return formato;
     }
 
-    // Metodo per verificare se il torneo è aperto
-    public Boolean isAperto() {
-        // Esempio: limite massimo di giocatori
-        return giocatori.size() < 16;
+    public boolean isAperto() {
+        LocalDate dataTorneo = data.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        LocalDate oggi = LocalDate.now();
+
+        return !oggi.isAfter(dataTorneo);
     }
 
     // Metodo per aggiungere un mazzo (con codice come chiave)
-    public void aggiungiMazzo(int codice, Mazzo m) {
-        if (!mazziTorneo.containsKey(codice)) {
-            mazziTorneo.put(codice, m);
-        }
+    public void aggiungiMazzo(Integer codice, Mazzo m) {
+        mazziTorneo.put(codice, m);
     }
 
     // Metodo per aggiungere un giocatore (con email come chiave)
     public void aggiungiGiocatore(String email, Giocatore g) {
-        if (!giocatori.containsKey(email)) {
-            giocatori.put(email, g);
-        }
+        giocatori.put(email, g);
     }
 
     // Metodo per ottenere un giocatore dato l'email
@@ -80,7 +82,7 @@ public class Torneo {
     }
 
     // Metodo per ottenere un mazzo dato il codice
-    public Mazzo getMazzo(int codice) {
+    public Mazzo getMazzo(Integer codice) {
         return mazziTorneo.get(codice);
     }
 

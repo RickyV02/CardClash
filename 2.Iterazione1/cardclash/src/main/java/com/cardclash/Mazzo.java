@@ -1,8 +1,10 @@
 package com.cardclash;
 
+import java.security.SecureRandom;
+
 public class Mazzo {
 
-    private int codice;
+    private Integer codice;
     private String nome;
     private TipoMazzo tipoMazzo;
 
@@ -12,13 +14,18 @@ public class Mazzo {
     }
 
     // Getter per il codice
-    public int getCodice() {
+    public Integer getCodice() {
         return codice;
     }
 
     // Setter per il codice
-    public void setCodice(int codice) {
-        this.codice = codice;
+    public void setCodice() {
+        generaCodice();
+    }
+
+    private void generaCodice() {
+        SecureRandom random = new SecureRandom();
+        this.codice = random.nextInt(999999);
     }
 
     // Getter per il nome
