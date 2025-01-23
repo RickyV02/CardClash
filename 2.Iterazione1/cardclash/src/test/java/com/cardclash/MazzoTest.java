@@ -1,11 +1,7 @@
 package com.cardclash;
 
-import java.util.Date;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import org.junit.Test;

@@ -2,8 +2,7 @@ package com.cardclash;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,21 +10,20 @@ public class Torneo {
 
     private Integer codice;
     private final String nome;
-    private final Date data;
-    private final String orario;
+    private final LocalDate data;
+    private final LocalTime orario;
     private final String luogo;
     private final Map<String, Giocatore> giocatori;
     private final Map<Integer, Mazzo> mazziTorneo;
     private FormatoTorneo formato;
 
-    public Torneo(String nome, Date data, String orario, String luogo) {
+    public Torneo(String nome, LocalDate data, LocalTime orario, String luogo) {
         this.nome = nome;
         this.data = data;
         this.orario = orario;
         this.luogo = luogo;
         this.giocatori = new HashMap<>();
         this.mazziTorneo = new HashMap<>();
-        generaCodice();
     }
 
     private void generaCodice() {
@@ -57,14 +55,9 @@ public class Torneo {
     }
 
     public boolean isAperto() {
-        //per il momento controlliamo solo la data
-        LocalDate dataTorneo = data.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-
+        // per il momento controlliamo solo la data
         LocalDate oggi = LocalDate.now();
-
-        return !oggi.isAfter(dataTorneo);
+        return data.isAfter(oggi);
     }
 
     // Metodo per aggiungere un mazzo (con codice come chiave)
@@ -101,7 +94,7 @@ public class Torneo {
                 + "codice=" + codice
                 + ", nome='" + nome + '\''
                 + ", data=" + data
-                + ", orario='" + orario + '\''
+                + ", orario=" + orario
                 + ", luogo='" + luogo + '\''
                 + ", numero giocatori=" + giocatori.size()
                 + ", numero mazzi=" + mazziTorneo.size()

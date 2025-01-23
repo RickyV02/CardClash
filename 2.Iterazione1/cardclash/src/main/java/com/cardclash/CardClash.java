@@ -1,5 +1,7 @@
 package com.cardclash;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,8 +46,9 @@ public class CardClash {
         return cardClash;
     }
 
-    public void creaTorneo(String nome, Date data, String orario, String luogo) {
-        this.torneoCorrente = new Torneo(nome, data, orario, luogo);
+    public void creaTorneo(String nome, LocalDate data, String orario, String luogo) {
+        LocalTime o = LocalTime.parse(orario);
+        this.torneoCorrente = new Torneo(nome, data, o, luogo);
         System.out.println("Torneo creato: " + torneoCorrente.getNome());
     }
 
@@ -63,7 +66,8 @@ public class CardClash {
         this.tornei.put(code, torneoCorrente);
     }
 
-    public void registraGiocatore(String nome, String mail, String password, String nickname) throws GiocatoreGiaRegistratoException {
+    public void registraGiocatore(String nome, String mail, String password, String nickname)
+            throws GiocatoreGiaRegistratoException {
         /* Estensione 1.A del caso d'uso UC2 */
         if (giocatori.containsKey(mail)) {
             throw new GiocatoreGiaRegistratoException("Giocatore già registrato con l'email: " + mail);
@@ -76,7 +80,7 @@ public class CardClash {
         giocatori.put(mail, giocatoreCorrente);
     }
 
-    public void mostraTorneiDisponibili() {
+    public List<Torneo> mostraTorneiDisponibili() {
         List<Torneo> elencoTornei = getTornei();
         for (Iterator<Torneo> iterator = elencoTornei.iterator(); iterator.hasNext();) {
             Torneo t = iterator.next();
@@ -84,7 +88,8 @@ public class CardClash {
                 iterator.remove();
             }
         }
-        System.out.println("Tornei disponibili:" + elencoTornei.toString());
+
+        return elencoTornei;
     }
 
     public List<Torneo> getTornei() {
@@ -93,9 +98,10 @@ public class CardClash {
         return elencoTornei;
     }
 
-    public void selezionaTorneo(Integer codTorneo) {
+    public Torneo selezionaTorneo(Integer codTorneo) {
         Torneo t = tornei.get(codTorneo);
         setTorneoCorrente(t);
+        return t;
     }
 
     public void inserimentoMazzo(String nome) {
@@ -103,7 +109,6 @@ public class CardClash {
             System.out.println("Nessun giocatore selezionato.");
         }
         Mazzo nuovoMazzo = new Mazzo(nome);
-        nuovoMazzo.setCodice();
         giocatoreCorrente.setMazzoCorrente(nuovoMazzo);
     }
 
@@ -127,6 +132,7 @@ public class CardClash {
 
     public void confermaIscrizione() {
         Mazzo m = giocatoreCorrente.getMazzoCorrente();
+        m.setCodice();
         Integer codice = m.getCodice();
         giocatoreCorrente.aggiungiMazzo(codice, m);
         torneoCorrente.aggiungiMazzo(codice, m);

@@ -18,9 +18,8 @@ public class Mazzo {
         return codice;
     }
 
-    // Setter per il codice
     public void setCodice() {
-        generaCodice();
+        this.generaCodice();
     }
 
     private void generaCodice() {

@@ -9,6 +9,7 @@ import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -28,6 +29,8 @@ public class CardClashTest {
     public void clearTest() {
         cardClash.setTorneoCorrente(null);
         cardClash.setGiocatoreCorrente(null);
+        cardClash.getTornei().clear();
+        cardClash.getGiocatori().clear();
     }
 
     @Test
@@ -45,15 +48,14 @@ public class CardClashTest {
 
     @Test
     public void testCreaTorneo() {
-        Date data = new Date();
-        cardClash.creaTorneo("Torneo Test", data, "15:00", "Luogo Test");
+        cardClash.creaTorneo("Torneo Test", LocalDate.now(), "15:00", "Luogo Test");
         Torneo torneo = cardClash.getTorneoCorrente();
         assertNotNull(torneo);
     }
 
     @Test
     public void testSelezionaFormato() {
-        cardClash.creaTorneo("Torneo Test", new Date(), "15:00", "Luogo Test");
+        cardClash.creaTorneo("Torneo Test", LocalDate.now(), "15:00", "Luogo Test");
         Torneo torneo = cardClash.getTorneoCorrente();
 
         cardClash.selezionaFormato(20); // formato inesistente
@@ -66,8 +68,7 @@ public class CardClashTest {
 
     @Test
     public void testConfermaCreazione() {
-        Date data = new Date();
-        cardClash.creaTorneo("Torneo Test", data, "15:00", "Luogo Test");
+        cardClash.creaTorneo("Torneo Test", LocalDate.now(), "15:00", "Luogo Test");
         cardClash.confermaCreazione();
         Torneo torneo = cardClash.getTorneoCorrente();
         assertNotNull(torneo);
@@ -103,58 +104,39 @@ public class CardClashTest {
     @Test
     public void testMostraTorneiDisponibili() {
         // 1. Crea tornei con date passate
-        cardClash.creaTorneo("Torneo 1", LocalDate.of(2023, 12, 12), "10:00", "Luogo 1");
+        cardClash.creaTorneo("Torneo 1", LocalDate.of(2025, 01, 12), "10:00", "Luogo 1");
+        Torneo t1 = cardClash.getTorneoCorrente();
         cardClash.confermaCreazione();
-        cardClash.creaTorneo("Torneo 2", LocalDate.of(2023, 12, 13), "14:00", "Luogo 2");
+        cardClash.creaTorneo("Torneo 2", LocalDate.of(2025, 01, 13), "14:00", "Luogo 2");
+        Torneo t2 = cardClash.getTorneoCorrente();
         cardClash.confermaCreazione();
 
-        // 2. Aggiungi un torneo con data futura (aperto)
-        cardClash.creaTorneo("Torneo 3", LocalDate.now().plusDays(1), "10:00", "Luogo 3");
+        assertFalse(cardClash.mostraTorneiDisponibili().contains(t1));
+        assertFalse(cardClash.mostraTorneiDisponibili().contains(t2));
 
-        // 3. Mostra i tornei disponibili (il metodo rimuove i tornei chiusi)
-        cardClash.mostraTorneiDisponibili();
+        // 2. Crea tornei con data futura
+        cardClash.creaTorneo("Torneo 3", LocalDate.of(2026, 12, 12), "10:00", "Luogo 3");
+        Torneo t3 = cardClash.getTorneoCorrente();
+        cardClash.confermaCreazione();
+        cardClash.creaTorneo("Torneo 4", LocalDate.of(2026, 12, 13), "14:00", "Luogo 4");
+        Torneo t4 = cardClash.getTorneoCorrente();
+        cardClash.confermaCreazione();
 
-        // 4. Verifica che solo il Torneo 3 (con data futura) sia disponibile
-        assertTrue(cardClash.getTorneiDisponibili().contains("Torneo 3"));
-        assertFalse(cardClash.getTorneiDisponibili().contains("Torneo 1"));
-        assertFalse(cardClash.getTorneiDisponibili().contains("Torneo 2"));
+        assertTrue(cardClash.mostraTorneiDisponibili().contains(t3));
+        assertTrue(cardClash.mostraTorneiDisponibili().contains(t4));
 
-        // 5. Crea tornei con data futura
-        cardClash.creaTorneo("Torneo 4", LocalDate.of(2024, 12, 12), "10:00", "Luogo 4");
-        cardClash.creaTorneo("Torneo 5", LocalDate.of(2024, 12, 13), "14:00", "Luogo 5");
+        // 3. Crea un torneo con data uguale a quella odierna, non è possibile
+        // prenotarsi ad un torneo il giorno stesso.
+        cardClash.creaTorneo("Torneo 5", LocalDate.now(), "10:00", "Luogo 5");
+        Torneo t5 = cardClash.getTorneoCorrente();
+        cardClash.confermaCreazione();
 
-        // 6. Mostra i tornei disponibili (verifica che siano visibili anche i tornei futuri)
-        cardClash.mostraTorneiDisponibili();
-
-        // 7. Verifica che i tornei futuri siano disponibili
-        assertTrue(cardClash.getTorneiDisponibili().contains("Torneo 4"));
-        assertTrue(cardClash.getTorneiDisponibili().contains("Torneo 5"));
-
-        // 8. Crea tornei con data passata (già chiusi)
-        cardClash.creaTorneo("Torneo 6", LocalDate.of(2023, 12, 12), "10:00", "Luogo 6");
-        cardClash.creaTorneo("Torneo 7", LocalDate.of(2023, 12, 13), "14:00", "Luogo 7");
-
-        // 9. Mostra i tornei disponibili (verifica che i tornei passati non siano visibili)
-        cardClash.mostraTorneiDisponibili();
-
-        // 10. Verifica che i tornei passati non siano disponibili
-        assertFalse(cardClash.getTorneiDisponibili().contains("Torneo 6"));
-        assertFalse(cardClash.getTorneiDisponibili().contains("Torneo 7"));
-
-        // 11. Crea un torneo con data uguale a quella odierna (quindi ancora aperto)
-        cardClash.creaTorneo("Torneo 8", LocalDate.now(), "10:00", "Luogo 8");
-
-        // 12. Mostra i tornei disponibili (verifica che il torneo odierno sia disponibile)
-        cardClash.mostraTorneiDisponibili();
-
-        // 13. Verifica che il torneo con data odierna sia disponibile
-        assertTrue(cardClash.getTorneiDisponibili().contains("Torneo 8"));
+        assertFalse(cardClash.mostraTorneiDisponibili().contains(t5));
     }
 
     @Test
     public void testSelezionaTorneo() {
-        Date data = new Date();
-        cardClash.creaTorneo("Torneo Test", data, "15:00", "Luogo Test");
+        cardClash.creaTorneo("Torneo Test", LocalDate.now(), "15:00", "Luogo Test");
         Torneo t = cardClash.getTorneoCorrente();
         cardClash.confermaCreazione();
         cardClash.selezionaTorneo(t.getCodice());
@@ -170,14 +152,15 @@ public class CardClashTest {
         cardClash.inserimentoMazzo("Mazzo Test");
         assertNotNull(cardClash.getGiocatori().get("mario@mail.com").getMazzoCorrente());
         Mazzo mazzo = cardClash.getGiocatori().get("mario@mail.com").getMazzoCorrente();
+        mazzo.setCodice();
         assertNotNull(mazzo);
         assertNotNull(mazzo.getCodice());
     }
 
     @Test
     public void testSelezionaTipo() {
-        Date data = new Date();
-        cardClash.creaTorneo("Torneo Test", data, "15:00", "Luogo Test");
+        cardClash.creaTorneo("Torneo Test", LocalDate.now(), "15:00", "Luogo Test");
+        cardClash.confermaCreazione();
         cardClash.selezionaFormato(1);
 
         Giocatore giocatore = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
@@ -198,7 +181,7 @@ public class CardClashTest {
 
     @Test
     public void testConfermaIscrizione() throws GiocatoreGiaRegistratoException {
-        cardClash.creaTorneo("Torneo Test", new Date(), "15:00", "Luogo Test");
+        cardClash.creaTorneo("Torneo Test", LocalDate.now(), "15:00", "Luogo Test");
         Torneo torneo = cardClash.getTorneoCorrente();
         cardClash.confermaCreazione();
 
@@ -206,9 +189,8 @@ public class CardClashTest {
         cardClash.confermaRegistrazione();
 
         cardClash.inserimentoMazzo("Mazzo Test");
-        Integer codiceMazzo = cardClash.getGiocatoreCorrente().getMazzoCorrente().getCodice();
         cardClash.confermaIscrizione();
-
+        Integer codiceMazzo = cardClash.getGiocatoreCorrente().getMazzoCorrente().getCodice();
         assertTrue(torneo.getGiocatori().containsKey("mario@mail.com"));
         assertTrue(torneo.getMazzi().containsKey(codiceMazzo));
         assertTrue(torneo.getGiocatore("mario@mail.com").getMazziGiocatore().containsKey(codiceMazzo));
