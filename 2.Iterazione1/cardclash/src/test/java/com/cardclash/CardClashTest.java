@@ -1,15 +1,13 @@
 package com.cardclash;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Map;
 
-import org.junit.BeforeClass;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;

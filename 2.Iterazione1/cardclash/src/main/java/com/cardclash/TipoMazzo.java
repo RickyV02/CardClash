@@ -1,5 +1,4 @@
 package com.cardclash;
-
 public class TipoMazzo {
 
     private Integer codice;

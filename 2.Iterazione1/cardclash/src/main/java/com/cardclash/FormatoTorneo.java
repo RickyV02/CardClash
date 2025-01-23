@@ -2,8 +2,6 @@ package com.cardclash;
 
 import java.util.HashMap;
 import java.util.Map;
-
-
 public class FormatoTorneo {
 
     private Integer codice;

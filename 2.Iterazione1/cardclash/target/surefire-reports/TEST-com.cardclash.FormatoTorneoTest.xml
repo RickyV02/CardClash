@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="com.cardclash.CardClashTest" time="0.282" tests="12" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="com.cardclash.FormatoTorneoTest" time="0.008" tests="3" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="19"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -58,16 +58,7 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="63.0"/>
   </properties>
-  <testcase name="testLoadFormati" classname="com.cardclash.CardClashTest" time="0.007"/>
-  <testcase name="testConfermaRegistrazione" classname="com.cardclash.CardClashTest" time="0"/>
-  <testcase name="testSingletonInstance" classname="com.cardclash.CardClashTest" time="0"/>
-  <testcase name="testMostraTorneiDisponibili" classname="com.cardclash.CardClashTest" time="0.141"/>
-  <testcase name="testSelezionaTipo" classname="com.cardclash.CardClashTest" time="0.007"/>
-  <testcase name="testSelezionaTorneo" classname="com.cardclash.CardClashTest" time="0.003"/>
-  <testcase name="testInserimentoMazzo" classname="com.cardclash.CardClashTest" time="0.002"/>
-  <testcase name="testSelezionaFormato" classname="com.cardclash.CardClashTest" time="0.002"/>
-  <testcase name="testCreaTorneo" classname="com.cardclash.CardClashTest" time="0"/>
-  <testcase name="testRegistraGiocatore" classname="com.cardclash.CardClashTest" time="0.002"/>
-  <testcase name="testConfermaIscrizione" classname="com.cardclash.CardClashTest" time="0.001"/>
-  <testcase name="testConfermaCreazione" classname="com.cardclash.CardClashTest" time="0.001"/>
+  <testcase name="testLoadTipiMazzoMagic" classname="com.cardclash.FormatoTorneoTest" time="0.002"/>
+  <testcase name="testLoadTipiMazzoYuGiOh" classname="com.cardclash.FormatoTorneoTest" time="0.002"/>
+  <testcase name="testLoadTipiMazzoPokemon" classname="com.cardclash.FormatoTorneoTest" time="0.002"/>
 </testsuite>

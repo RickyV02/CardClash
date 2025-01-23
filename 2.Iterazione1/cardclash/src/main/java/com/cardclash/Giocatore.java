@@ -2,7 +2,6 @@ package com.cardclash;
 
 import java.util.HashMap;
 import java.util.Map;
-
 public class Giocatore {
 
     private String nome;
