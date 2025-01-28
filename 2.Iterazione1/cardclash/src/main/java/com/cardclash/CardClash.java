@@ -155,7 +155,7 @@ public class CardClash {
         return torneoCorrente;
     }
 
-    //da aggiornare, deve ritornare una lista
+    // da aggiornare, deve ritornare una lista
     public Map<String, Giocatore> getGiocatori() {
         return giocatori;
     }
