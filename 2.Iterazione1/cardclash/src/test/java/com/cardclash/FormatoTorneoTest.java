@@ -1,11 +1,11 @@
 package com.cardclash;
 
-import org.junit.Before;
-import org.junit.Test;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
-import java.util.Map;
+import org.junit.Before;
+import org.junit.Test;
 
 public class FormatoTorneoTest {
 
@@ -15,9 +15,9 @@ public class FormatoTorneoTest {
 
     @Before
     public void setUp() {
-        formatoMagic = new FormatoTorneo(1, "Commander", "Magic: The Gathering");
+        formatoMagic = new FormatoTorneo(1, "Pauper", "Magic: The Gathering");
         formatoPokemon = new FormatoTorneo(2, "Monotype", "Pokémon");
-        formatoYuGiOh = new FormatoTorneo(3, "Standard", "Yu-Gi-Oh!");
+        formatoYuGiOh = new FormatoTorneo(3, "1v1", "Yu-Gi-Oh!");
     }
 
     @Test
@@ -26,7 +26,7 @@ public class FormatoTorneoTest {
         Map<Integer, TipoMazzo> tipiMazzo = formatoMagic.getTipiMazzo();
         assertEquals(1, tipiMazzo.size());
         assertTrue(tipiMazzo.containsKey(1));
-        assertEquals("Mazzo commander", tipiMazzo.get(1).getNome());
+        assertEquals("Mazzo pauper", tipiMazzo.get(1).getNome());
     }
 
     @Test

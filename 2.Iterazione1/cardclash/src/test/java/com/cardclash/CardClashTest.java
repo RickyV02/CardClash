@@ -59,9 +59,9 @@ public class CardClashTest {
         cardClash.selezionaFormato(20); // formato inesistente
         assertNull(torneo.getFormato());
 
-        cardClash.selezionaFormato(1); // Commander
+        cardClash.selezionaFormato(1); // Pauper
         assertNotNull(torneo.getFormato());
-        assertEquals("Commander", torneo.getFormato().getNome());
+        assertEquals("Pauper", torneo.getFormato().getNome());
     }
 
     @Test

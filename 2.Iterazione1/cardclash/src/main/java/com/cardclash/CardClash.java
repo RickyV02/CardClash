@@ -27,9 +27,9 @@ public class CardClash {
     }
 
     private void loadFormati() {
-        FormatoTorneo formato1 = new FormatoTorneo(1, "Commander", "Magic: The Gathering");
+        FormatoTorneo formato1 = new FormatoTorneo(1, "Pauper", "Magic: The Gathering");
         FormatoTorneo formato2 = new FormatoTorneo(2, "Monotype", "Pokémon");
-        FormatoTorneo formato3 = new FormatoTorneo(3, "Standard", "Yu-Gi-Oh!");
+        FormatoTorneo formato3 = new FormatoTorneo(3, "1v1", "Yu-Gi-Oh!");
 
         formati.put(formato1.getCodice(), formato1);
         formati.put(formato2.getCodice(), formato2);

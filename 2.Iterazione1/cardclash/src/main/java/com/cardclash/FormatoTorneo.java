@@ -22,19 +22,19 @@ public class FormatoTorneo {
         String key = this.getGioco() + "-" + this.getNome();
 
         switch (key) {
-            case "Magic: The Gathering-Commander" -> {
-                this.tipiMazzo.put(1, new TipoMazzo(1, "Mazzo commander"));
-                System.out.println("Tipi di mazzo caricati per Commander (Magic).");
+            case "Magic: The Gathering-Pauper" -> {
+                this.tipiMazzo.put(1, new TipoMazzo(1, "Mazzo pauper"));
+                System.out.println("Tipi di mazzo caricati per Pauper (Magic).");
             }
             case "Pokémon-Monotype" -> {
                 this.tipiMazzo.put(1, new TipoMazzo(1, "Mazzo monotype"));
                 System.out.println("Tipi di mazzo caricati per Monotype (Pokémon).");
             }
-            case "Yu-Gi-Oh!-Standard" -> {
+            case "Yu-Gi-Oh!-1v1" -> {
                 this.tipiMazzo.put(1, new TipoMazzo(1, "Main deck"));
                 this.tipiMazzo.put(2, new TipoMazzo(2, "Extra deck"));
                 this.tipiMazzo.put(3, new TipoMazzo(3, "Side deck"));
-                System.out.println("Tipi di mazzo caricati per Standard (Yu-Gi-Oh!).");
+                System.out.println("Tipi di mazzo caricati per 1v1 (Yu-Gi-Oh!).");
             }
             default -> System.out.println("Gioco non riconosciuto.");
         }
