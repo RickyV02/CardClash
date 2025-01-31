@@ -1,0 +1,7 @@
+com\cardclash\CardClash.class
+com\cardclash\GiocatoreGiaRegistratoException.class
+com\cardclash\TipoMazzo.class
+com\cardclash\Giocatore.class
+com\cardclash\Mazzo.class
+com\cardclash\Torneo.class
+com\cardclash\FormatoTorneo.class

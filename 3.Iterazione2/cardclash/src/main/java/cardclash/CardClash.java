@@ -18,6 +18,7 @@ public class CardClash {
 
     private Torneo torneoCorrente;
     private Giocatore giocatoreCorrente;
+    private FormatoTorneo formatoCorrente;
 
     private CardClash() {
         this.formati = new HashMap<>();
@@ -139,12 +140,32 @@ public class CardClash {
         torneoCorrente.aggiungiGiocatore(email, giocatoreCorrente);
     }
 
+    public void selezioneFormato(Integer codice) {
+        FormatoTorneo f = formati.get(codice);
+        if (f != null) {
+            System.out.println("Formato selezionato: " + f.toString());
+            this.setFormatoCorrente(f);
+        }
+    }
+
+    public void inserimentoTipoMazzo(String nome) {
+        formatoCorrente.inserisciTipoMazzo(nome);
+    }
+
+    public void confermaInserimentoTipo() {
+        this.formatoCorrente.confermaInserimento();
+    }
+
     public void setTorneoCorrente(Torneo t) {
         torneoCorrente = t;
     }
 
     public void setGiocatoreCorrente(Giocatore g) {
         giocatoreCorrente = g;
+    }
+
+    public void setFormatoCorrente(FormatoTorneo f) {
+        formatoCorrente = f;
     }
 
     public Map<Integer, FormatoTorneo> getFormati() {
@@ -162,4 +183,5 @@ public class CardClash {
     public Giocatore getGiocatoreCorrente() {
         return giocatoreCorrente;
     }
+
 }
