@@ -65,6 +65,15 @@ public class Giocatore {
         return mazzoCorrente;
     }
 
+    public void setPunteggio(Integer codTorneo) {
+        punteggi.put(codTorneo, 0.0f);
+    }
+
+    public void addPunteggio(Integer codTorneo, Float punteggio) {
+        Float oldPunteggio = punteggi.get(codTorneo);
+        punteggi.put(codTorneo, oldPunteggio + punteggio);
+    }
+
     public Map<Integer, Float> getPunteggi() {
         return punteggi;
     }

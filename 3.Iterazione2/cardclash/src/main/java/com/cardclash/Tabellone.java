@@ -1,7 +1,8 @@
 package com.cardclash;
 
-import java.util.ArrayList;
+import java.security.SecureRandom;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -11,29 +12,53 @@ public class Tabellone {
     private final List<Giocatore> giocatori;
     private final Map<Integer, Partita> partite;
 
-    public Tabellone() {
-        this.giocatori = new ArrayList<>();
+    public Tabellone(List<Giocatore> giocatori) {
+        this.giocatori = giocatori;
         this.partite = new HashMap<>();
+        inizializzaPartite();
     }
 
-    public void creaPartita(Giocatore g1, Giocatore g2) {
-        Partita partita = new Partita(g1, g2);
-        partite.put(partita.getCodice(), partita);
+    private void generaCodice() {
+        SecureRandom random = new SecureRandom();
+        this.codice = random.nextInt(999999);
     }
 
-    public void eliminaPartita(Partita partita) {
-        partite.remove(partita);
+    public void setCodice() {
+        this.generaCodice();
     }
 
-    private void eliminaGiocatore(Giocatore giocatore) {
-        giocatori.remove(giocatore);
+    public Integer getCodice() {
+        return codice;
     }
 
-    public void aggiornaPunteggio(Giocatore giocatore, float punteggio) {
-        // Logica per aggiornare il punteggio del giocatore
+    private void inizializzaPartite() {
+        for (Iterator<Giocatore> iterator = giocatori.iterator(); iterator.hasNext();) {
+            Giocatore g1 = iterator.next();
+            Giocatore g2 = iterator.next();
+            Partita p = new Partita(g1, g2);
+            p.setCodice();
+            partite.put(p.getCodice(), p);
+        }
+    }
+
+    public void eliminaGiocatore(String email) {
+        for (Iterator<Giocatore> iterator = giocatori.iterator(); iterator.hasNext();) {
+            Giocatore g = iterator.next();
+            if (g.getEmail().equals(email)) {
+                iterator.remove();
+            }
+        }
     }
 
     public void aggiornaTabellone() {
-        // Logica per aggiornare il tabellone
+        partite.clear();
+        inizializzaPartite();
+    }
+
+    public void aggiornaPunteggi(Integer codTorneo, float punteggio) {
+        for (Iterator<Giocatore> iterator = giocatori.iterator(); iterator.hasNext();) {
+            Giocatore g = iterator.next();
+            g.addPunteggio(codTorneo, punteggio);
+        }
     }
 }

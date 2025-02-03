@@ -3,44 +3,35 @@ package com.cardclash;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FormatoTorneo {
+public abstract class FormatoTorneo {
 
     private Integer codice;
     private String nome;
-    private String gioco;
+    private final Gioco gioco;
     private final Map<Integer, TipoMazzo> tipiMazzo;
     private TipoMazzo tipoMazzoCorrente;
     private final Integer numMaxGiocatori;
+    private final Float victoryScore;
+    private final Float penaltyScore;
 
-    // Costruttore
-    public FormatoTorneo(Integer codice, String nome, String gioco, Integer numGiocatori) {
+    // Costruttore aggiornato: il parametro "gioco" è di tipo Gioco
+    public FormatoTorneo(Integer codice, String nome, Gioco gioco, Integer numGiocatori, Float victoryScore, Float penaltyScore) {
         this.codice = codice;
         this.nome = nome;
         this.gioco = gioco;
         this.tipiMazzo = new HashMap<>();
         this.numMaxGiocatori = numGiocatori;
+        this.victoryScore = victoryScore;
+        this.penaltyScore = penaltyScore;
         loadTipiMazzo();
     }
 
-    // da rifare, il costruttore di TipoMazzo è stato modificato
-    public void loadTipiMazzo() {
-        //placeholder
-        TipoMazzo tm1 = new TipoMazzo("Mazzo1");
-        TipoMazzo tm2 = new TipoMazzo("Mazzo2");
-        TipoMazzo tm3 = new TipoMazzo("Mazzo3");
-        tipiMazzo.put(tm1.getCodice(), tm1);
-        tipiMazzo.put(tm2.getCodice(), tm2);
-        tipiMazzo.put(tm3.getCodice(), tm3);
-    }
+    // Metodo astratto che deve essere implementato dalle sottoclassi
+    public abstract void loadTipiMazzo();
 
     public void inserisciTipoMazzo(String nome) {
         TipoMazzo tm = new TipoMazzo(nome);
         this.setTipoMazzoCorrente(tm);
-    }
-
-    // Getter per tipiMazzo
-    public Map<Integer, TipoMazzo> getTipiMazzo() {
-        return tipiMazzo;
     }
 
     public void confermaInserimento() {
@@ -52,9 +43,17 @@ public class FormatoTorneo {
         tipiMazzo.put(code, tm);
     }
 
-    // Getter per il codice
+    // Getter e Setter
     public Integer getCodice() {
         return codice;
+    }
+
+    public void setCodice(Integer codice) {
+        this.codice = codice;
+    }
+
+    public Map<Integer, TipoMazzo> getTipiMazzo() {
+        return tipiMazzo;
     }
 
     public TipoMazzo getTipoMazzoCorrente() {
@@ -65,33 +64,28 @@ public class FormatoTorneo {
         return numMaxGiocatori;
     }
 
-    // Setter per il codice
-    public void setCodice(Integer codice) {
-        this.codice = codice;
-    }
-
-    // Getter per il nome
     public String getNome() {
         return nome;
     }
 
-    // Setter per il nome
     public void setNome(String nome) {
         this.nome = nome;
     }
 
-    // Getter per il gioco
-    public String getGioco() {
+    public Gioco getGioco() {
         return gioco;
-    }
-
-    // Setter per il gioco
-    public void setGioco(String gioco) {
-        this.gioco = gioco;
     }
 
     public void setTipoMazzoCorrente(TipoMazzo tipoMazzoCorrente) {
         this.tipoMazzoCorrente = tipoMazzoCorrente;
+    }
+
+    public Float getVictoryScore() {
+        return victoryScore;
+    }
+
+    public Float getPenaltyScore() {
+        return penaltyScore;
     }
 
     @Override
@@ -99,7 +93,7 @@ public class FormatoTorneo {
         return "FormatoTorneo{"
                 + "codice=" + codice
                 + ", nome='" + nome + '\''
-                + ", gioco='" + gioco + '\''
+                + ", gioco=" + gioco // Utilizza il metodo toString() dell'enum
                 + ", tipiMazzo=" + tipiMazzo
                 + '}';
     }

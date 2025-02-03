@@ -15,9 +15,9 @@ public class FormatoTorneoTest {
 
     @Before
     public void setUp() {
-        formatoMagic = new FormatoTorneo(1, "Pauper", "Magic: The Gathering");
-        formatoPokemon = new FormatoTorneo(2, "Monotype", "Pokémon");
-        formatoYuGiOh = new FormatoTorneo(3, "1v1", "Yu-Gi-Oh!");
+        formatoMagic = new FormatoTorneoPauper(1, "Pauper", Gioco.MAGIC, 16, 2.0f, 3.0f);
+        formatoPokemon = new FormatoTorneoMonotype(2, "Monotype", Gioco.POKEMON, 16, 2.0f, 3.0f);
+        formatoYuGiOh = new FormatoTorneo1v1(3, "1v1", Gioco.YUGIOH, 16, 1.0f, 3.0f);
     }
 
     @Test
@@ -50,5 +50,4 @@ public class FormatoTorneoTest {
         assertEquals("Extra deck", tipiMazzo.get(2).getNome());
         assertEquals("Side deck", tipiMazzo.get(3).getNome());
     }
-
 }

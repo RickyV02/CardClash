@@ -27,11 +27,10 @@ public class CardClash {
         this.giocatori = new HashMap<>();
     }
 
-    //da rifare dopo aver modificato il costruttore di TipoMazzo
     private void loadFormati() {
-        FormatoTorneo formato1 = new FormatoTorneo(1, "Pauper", "Magic: The Gathering", 16);
-        FormatoTorneo formato2 = new FormatoTorneo(2, "Monotype", "Pokémon", 16);
-        FormatoTorneo formato3 = new FormatoTorneo(3, "1v1", "Yu-Gi-Oh!", 16);
+        FormatoTorneo formato1 = new FormatoTorneoPauper(1, "Pauper", Gioco.MAGIC, 16, 2.0f, 3.0f);
+        FormatoTorneo formato2 = new FormatoTorneoMonotype(2, "Monotype", Gioco.POKEMON, 16, 2.0f, 3.0f);
+        FormatoTorneo formato3 = new FormatoTorneo1v1(3, "1v1", Gioco.YUGIOH, 16, 1.0f, 3.0f);
 
         formati.put(formato1.getCodice(), formato1);
         formati.put(formato2.getCodice(), formato2);
@@ -160,6 +159,44 @@ public class CardClash {
 
     public void confermaInserimentoTipo() {
         this.formatoCorrente.confermaInserimento();
+    }
+
+    //estensione 5.a implementata
+    public Tabellone creaTabellone(Integer codTorneo) {
+        Torneo t = tornei.get(codTorneo);
+        setTorneoCorrente(t);
+        try {
+            return t.creaTabellone();
+        } catch (GiocatoriNotPotenzaDiDueException e) {
+            System.err.println(e.getMessage());
+            return null;
+        }
+    }
+
+    public void confermaTabellone() {
+        torneoCorrente.confermaTabellone();
+    }
+
+    public Tabellone visualizzaTabellone(Integer codTorneo) {
+        Torneo t = tornei.get(codTorneo);
+        setTorneoCorrente(t);
+        Tabellone tab = t.getTabellone();
+        t.setTabelloneCorrente(tab);
+        return tab;
+    }
+
+    public void eliminaGiocatore(String email) {
+        torneoCorrente.eliminaGiocatore(email);
+    }
+
+    public void aggiornaTabellone() {
+        torneoCorrente.aggiornaTabellone();
+        torneoCorrente.setTabellone();
+    }
+
+    public void aggiornaPunteggio() {
+        FormatoTorneo f = torneoCorrente.getFormato();
+        torneoCorrente.aggiornaPunteggi(f.getVictoryScore());
     }
 
     public void setTorneoCorrente(Torneo t) {

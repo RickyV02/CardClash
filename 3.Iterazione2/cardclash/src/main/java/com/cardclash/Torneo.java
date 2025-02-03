@@ -3,7 +3,10 @@ package com.cardclash;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class Torneo {
@@ -17,6 +20,8 @@ public class Torneo {
     private final Map<Integer, Mazzo> mazziTorneo;
     private FormatoTorneo formato;
     private Integer numGiocatori;
+    private Tabellone tabellone;
+    private Tabellone tabelloneCorrente;
 
     public Torneo(String nome, LocalDate data, LocalTime orario, String luogo) {
         this.nome = nome;
@@ -56,11 +61,19 @@ public class Torneo {
         return formato;
     }
 
+    public Tabellone getTabellone() {
+        return tabellone;
+    }
+
     public boolean isAperto() {
         LocalDate oggi = LocalDate.now();
         LocalTime adesso = LocalTime.now();
         return (data.isAfter(oggi) || (data.isEqual(oggi) && orario.isAfter(adesso)))
                 && numGiocatori < formato.getNumMaxGiocatori();
+    }
+
+    public boolean isPotenzaDiDue(int n) {
+        return (n != 0) && ((n & (n - 1)) == 0);
     }
 
     // Metodo per aggiungere un mazzo (con codice come chiave)
@@ -74,6 +87,42 @@ public class Torneo {
         addGiocatore();
     }
 
+    public Tabellone creaTabellone() throws GiocatoriNotPotenzaDiDueException {
+        List<Giocatore> giocatoriIscritti = getGiocatoriList();
+        inizializzPunteggi(giocatoriIscritti);
+        boolean checkPotenza = isPotenzaDiDue(giocatoriIscritti.size());
+        if (checkPotenza) {
+            return new Tabellone(giocatoriIscritti);
+        } else {
+            throw new GiocatoriNotPotenzaDiDueException(giocatoriIscritti.size());
+        }
+    }
+
+    public void confermaTabellone() {
+        tabelloneCorrente.setCodice();
+        setTabellone();
+    }
+
+    public void eliminaGiocatore(String email) {
+        tabelloneCorrente.eliminaGiocatore(email);
+    }
+
+    public void aggiornaTabellone() {
+        tabelloneCorrente.aggiornaTabellone();
+    }
+
+    public void aggiornaPunteggi(Float punteggio) {
+        tabelloneCorrente.aggiornaPunteggi(codice, punteggio);
+    }
+
+    public void setTabellone() {
+        tabellone = tabelloneCorrente;
+    }
+
+    public void setTabelloneCorrente(Tabellone tabelloneCorrente) {
+        this.tabelloneCorrente = tabelloneCorrente;
+    }
+
     public void addGiocatore() {
         numGiocatori++;
     }
@@ -85,6 +134,19 @@ public class Torneo {
 
     public Map<String, Giocatore> getGiocatori() {
         return giocatori;
+    }
+
+    public List<Giocatore> getGiocatoriList() {
+        List<Giocatore> giocatoriIscritti = new ArrayList<>();
+        giocatoriIscritti.addAll(giocatori.values());
+        return giocatoriIscritti;
+    }
+
+    public void inizializzPunteggi(List<Giocatore> giocatoriIscritti) {
+        for (Iterator<Giocatore> iterator = giocatoriIscritti.iterator(); iterator.hasNext();) {
+            Giocatore giocatore = iterator.next();
+            giocatore.setPunteggio(this.codice);
+        }
     }
 
     public Map<Integer, Mazzo> getMazzi() {
