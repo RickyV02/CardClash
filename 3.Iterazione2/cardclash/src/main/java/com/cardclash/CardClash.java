@@ -161,7 +161,7 @@ public class CardClash {
         this.formatoCorrente.confermaInserimento();
     }
 
-    //estensione 5.a implementata
+    // estensione 5.a implementata
     public Tabellone creaTabellone(Integer codTorneo) {
         Torneo t = tornei.get(codTorneo);
         setTorneoCorrente(t);
