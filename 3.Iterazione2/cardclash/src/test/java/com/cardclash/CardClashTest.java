@@ -81,9 +81,9 @@ public class CardClashTest {
         cardClash.confermaRegistrazione();
 
         // Tenta di registrare lo stesso giocatore con la stessa email
-        GiocatoreGiaRegistratoException exception = assertThrows(GiocatoreGiaRegistratoException.class, () -> {
-            cardClash.registraGiocatore("Mario Rossi", "mario@mail.com", "password456", "mario123");
-        });
+        assertNotNull(assertThrows(GiocatoreGiaRegistratoException.class, () -> 
+            cardClash.registraGiocatore("Mario Rossi", "mario@mail.com", "password456", "mario123")
+        ));
     }
 
     @Test
@@ -164,6 +164,7 @@ public class CardClashTest {
         Mazzo mazzo = new Mazzo("Mazzo di Mario");
         giocatore.setMazzoCorrente(mazzo);
 
+        //prendiamo il primo tipo di mazzo consentito, per semplicità
         Integer codiceTipo = tipiMazziConsentiti.keySet().stream().findFirst().get();
         cardClash.selezionaTipo(codiceTipo);
 
