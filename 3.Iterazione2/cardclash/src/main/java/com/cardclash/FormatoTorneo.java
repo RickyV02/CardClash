@@ -15,7 +15,8 @@ public abstract class FormatoTorneo {
     private final Float penaltyScore;
 
     // Costruttore aggiornato: il parametro "gioco" è di tipo Gioco
-    public FormatoTorneo(Integer codice, String nome, Gioco gioco, Integer numGiocatori, Float victoryScore, Float penaltyScore) {
+    public FormatoTorneo(Integer codice, String nome, Gioco gioco, Integer numGiocatori, Float victoryScore,
+            Float penaltyScore) {
         this.codice = codice;
         this.nome = nome;
         this.gioco = gioco;
@@ -27,7 +28,7 @@ public abstract class FormatoTorneo {
     }
 
     // Metodo astratto che deve essere implementato dalle sottoclassi
-    public abstract void loadTipiMazzo();
+    protected abstract void loadTipiMazzo();
 
     public void inserisciTipoMazzo(String nome) {
         TipoMazzo tm = new TipoMazzo(nome);

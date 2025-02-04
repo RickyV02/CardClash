@@ -78,6 +78,10 @@ public class Giocatore {
         return punteggi;
     }
 
+    public float getPunteggio(Integer codTorneo) {
+        return punteggi.get(codTorneo);
+    }
+
     public Map<Integer, Mazzo> getMazzi() {
         return mazziGiocatore;
     }

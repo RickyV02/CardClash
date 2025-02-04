@@ -199,6 +199,10 @@ public class CardClash {
         torneoCorrente.aggiornaPunteggi(f.getVictoryScore());
     }
 
+    public FormatoTorneo getFormatoCorrente() {
+        return formatoCorrente;
+    }
+
     public void setTorneoCorrente(Torneo t) {
         torneoCorrente = t;
     }

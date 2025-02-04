@@ -7,7 +7,7 @@ public class FormatoTorneoPauper extends FormatoTorneo {
     }
 
     @Override
-    public void loadTipiMazzo() {
+    protected void loadTipiMazzo() {
         switch (getGioco()) {
             case MAGIC:
                 TipoMazzo tm = new TipoMazzo("Mazzo pauper");

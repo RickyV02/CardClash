@@ -31,6 +31,14 @@ public class Tabellone {
         return codice;
     }
 
+    public Map<Integer, Partita> getPartite() {
+        return partite;
+    }
+
+    public List<Giocatore> getGiocatori() {
+        return giocatori;
+    }
+
     private void inizializzaPartite() {
         for (Iterator<Giocatore> iterator = giocatori.iterator(); iterator.hasNext();) {
             Giocatore g1 = iterator.next();

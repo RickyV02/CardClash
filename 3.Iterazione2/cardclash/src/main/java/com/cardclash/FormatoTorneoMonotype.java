@@ -7,7 +7,7 @@ public class FormatoTorneoMonotype extends FormatoTorneo {
     }
 
     @Override
-    public void loadTipiMazzo() {
+    protected void loadTipiMazzo() {
         switch (getGioco()) {
             case POKEMON:
                 TipoMazzo tm = new TipoMazzo("Mazzo monotype");

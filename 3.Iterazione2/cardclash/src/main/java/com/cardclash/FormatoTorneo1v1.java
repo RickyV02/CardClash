@@ -10,7 +10,7 @@ public class FormatoTorneo1v1 extends FormatoTorneo {
     }
 
     @Override
-    public void loadTipiMazzo() {
+    protected void loadTipiMazzo() {
         switch (getGioco()) {
             case YUGIOH:
                 List<TipoMazzo> tipi = new ArrayList<>();

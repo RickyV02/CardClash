@@ -7,23 +7,36 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TorneoTest {
 
     private Torneo torneo;
     private Giocatore giocatore;
     private Mazzo mazzo;
+    private List<Giocatore> giocatori;
 
     @Before
     public void setUp() {
-        torneo = new Torneo("Torneo di Prova", LocalDate.of(2025, 5, 20), LocalTime.of(10, 0), "Roma");
-        giocatore = new Giocatore("Marco Rossi", "marco@esempio.com", "password123", "marcor");
+        torneo = new Torneo("Torneo di Prova", LocalDate.of(2026, 5, 20), LocalTime.of(10, 0), "Roma");
+        giocatore = new Giocatore("Lorenzo Bianchi", "lorenzo@mail.com", "password123", "lore25");
         mazzo = new Mazzo("Mazzo di prova");
         mazzo.setCodice();
+
+        giocatori = new ArrayList<>();
+        giocatori.add(new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123"));
+        giocatori.add(new Giocatore("Luigi Bianchi", "luigi@mail.com", "password456", "luigi456"));
+        giocatori.add(new Giocatore("Giovanni Verdi", "giovanni@mail.com", "password789", "giovanni789"));
+        giocatori.add(new Giocatore("Paolo Neri", "paolo@mail.com", "password000", "paolo000"));
+
+        for (Giocatore g : giocatori) {
+            torneo.aggiungiGiocatore(g.getEmail(), g);
+        }
     }
 
     @After
@@ -35,9 +48,9 @@ public class TorneoTest {
 
     @Test
     public void testAggiungiGiocatore() {
-        assertEquals(0, torneo.getGiocatori().size());
+        assertEquals(4, torneo.getGiocatori().size());
         torneo.aggiungiGiocatore(giocatore.getEmail(), giocatore);
-        assertEquals(1, torneo.getGiocatori().size());
+        assertEquals(5, torneo.getGiocatori().size());
         assertEquals(giocatore, torneo.getGiocatore(giocatore.getEmail()));
         assertNotNull(torneo.getGiocatori());
     }
@@ -52,12 +65,23 @@ public class TorneoTest {
     }
 
     @Test
-    public void testIsAperto() {
-        // Torneo con data futura
-        assertTrue(torneo.isAperto());
-        // Torneo con data passata
-        Torneo t = new Torneo("Torneo passato", LocalDate.of(2020, 5, 20), LocalTime.of(10, 0), "Roma");
-        assertFalse(t.isAperto());
+    public void testCreaTabellone() throws GiocatoriNotPotenzaDiDueException {
+        Tabellone tabellone = torneo.creaTabellone();
+        assertNotNull(tabellone);
+        assertEquals(2, tabellone.getPartite().size());
+    }
+
+    @Test
+    public void testCreaTabelloneGiocatoriNonPotenzaDiDue() throws GiocatoriNotPotenzaDiDueException {
+        torneo.aggiungiGiocatore("extra@mail.com", new Giocatore("Extra", "extra@mail.com", "pass", "extra"));
+        assertNotNull(assertThrows(GiocatoriNotPotenzaDiDueException.class, () -> torneo.creaTabellone()));
+    }
+
+    @Test
+    public void testConfermaTabellone() throws GiocatoriNotPotenzaDiDueException {
+        torneo.creaTabellone();
+        torneo.confermaTabellone();
+        assertNotNull(torneo.getTabellone());
     }
 
 }

@@ -1,9 +1,14 @@
 package com.cardclash;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.Before;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -17,6 +22,7 @@ import org.junit.Test;
 public class CardClashTest {
 
     private static CardClash cardClash;
+    private List<Giocatore> giocatoriTest;
 
     @BeforeClass
     public static void initTest() {
@@ -81,9 +87,8 @@ public class CardClashTest {
         cardClash.confermaRegistrazione();
 
         // Tenta di registrare lo stesso giocatore con la stessa email
-        assertNotNull(assertThrows(GiocatoreGiaRegistratoException.class, () -> 
-            cardClash.registraGiocatore("Mario Rossi", "mario@mail.com", "password456", "mario123")
-        ));
+        assertNotNull(assertThrows(GiocatoreGiaRegistratoException.class,
+                () -> cardClash.registraGiocatore("Mario Rossi", "mario@mail.com", "password456", "mario123")));
     }
 
     @Test
@@ -164,7 +169,7 @@ public class CardClashTest {
         Mazzo mazzo = new Mazzo("Mazzo di Mario");
         giocatore.setMazzoCorrente(mazzo);
 
-        //prendiamo il primo tipo di mazzo consentito, per semplicità
+        // prendiamo il primo tipo di mazzo consentito, per semplicità
         Integer codiceTipo = tipiMazziConsentiti.keySet().stream().findFirst().get();
         cardClash.selezionaTipo(codiceTipo);
 
@@ -189,5 +194,104 @@ public class CardClashTest {
         assertTrue(torneo.getMazzi().containsKey(codiceMazzo));
         assertTrue(torneo.getGiocatore("mario@mail.com").getMazziGiocatore().containsKey(codiceMazzo));
     }
+
+    @Test
+    public void testSelezioneFormato() {
+        cardClash.selezioneFormato(1);
+        FormatoTorneo formatoCorrente = cardClash.getFormatoCorrente();
+        assertNotNull(formatoCorrente);
+    }
+
+    @Test
+    public void testInserimentoTipoMazzo() {
+        cardClash.selezioneFormato(1);
+        cardClash.inserimentoTipoMazzo("Aggro");
+        FormatoTorneo formato = cardClash.getFormati().get(1);
+        assertNotNull(formato.getTipoMazzoCorrente());
+        assertEquals("Aggro", formato.getTipoMazzoCorrente().getNome());
+    }
+
+    @Test
+    public void testConfermaInserimentoTipo() {
+        cardClash.selezioneFormato(1);
+        Integer size = cardClash.getFormatoCorrente().getTipiMazzo().size();
+        cardClash.inserimentoTipoMazzo("Control");
+        cardClash.confermaInserimentoTipo();
+        assertEquals(size + 1, cardClash.getFormatoCorrente().getTipiMazzo().size());
+        assertTrue("Control", cardClash.getFormati().get(1).getTipiMazzo().values().stream()
+                .anyMatch(tm -> tm.getNome().equals("Control")));
+    }
+
+    @Test
+    public void testCreaTabellone() {
+        cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
+        Tabellone tabellone = cardClash.creaTabellone(cardClash.getTorneoCorrente().getCodice());
+        assertNotNull(tabellone);
+    }
+
+    @Test
+    public void testConfermaTabellone() {
+        cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
+        Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
+        Giocatore g2 = new Giocatore("Luigi Bianchi", "luigi@mail.com", "password456", "luigi456");
+        cardClash.getTorneoCorrente().getGiocatori().put(g1.getEmail(), g1);
+        cardClash.getTorneoCorrente().getGiocatori().put(g2.getEmail(), g2);
+        cardClash.confermaCreazione();
+        cardClash.creaTabellone(cardClash.getTorneoCorrente().getCodice());
+        cardClash.confermaTabellone();
+        assertNotNull(cardClash.getTorneoCorrente().getTabellone());
+    }
+
+    @Test
+    public void testVisualizzaTabellone() {
+        cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
+        Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
+        Giocatore g2 = new Giocatore("Luigi Bianchi", "luigi@mail.com", "password456", "luigi456");
+        cardClash.getTorneoCorrente().getGiocatori().put(g1.getEmail(), g1);
+        cardClash.getTorneoCorrente().getGiocatori().put(g2.getEmail(), g2);
+        cardClash.confermaCreazione();
+        cardClash.creaTabellone(cardClash.getTorneoCorrente().getCodice());
+        cardClash.confermaTabellone();
+        Tabellone tabellone = cardClash.visualizzaTabellone(cardClash.getTorneoCorrente().getCodice());
+        assertNotNull(tabellone);
+    }
+
+    @Test
+    public void testEliminaGiocatore() {
+        cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
+        Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
+        Giocatore g2 = new Giocatore("Luigi Bianchi", "luigi@mail.com", "password456", "luigi456");
+        cardClash.getTorneoCorrente().getGiocatori().put(g1.getEmail(), g1);
+        cardClash.getTorneoCorrente().getGiocatori().put(g2.getEmail(), g2);
+        cardClash.confermaCreazione();
+        cardClash.creaTabellone(cardClash.getTorneoCorrente().getCodice());
+        cardClash.confermaTabellone();
+        cardClash.eliminaGiocatore("test@mail.com");
+        assertFalse(cardClash.getTorneoCorrente().getTabellone().getGiocatori().stream()
+                .anyMatch(g -> g.getEmail().equals("test@mail.com")));
+    }
+
+    @Test
+    public void testAggiornaTabellone() {
+        cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
+        Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
+        Giocatore g2 = new Giocatore("Luigi Bianchi", "luigi@mail.com", "password456", "luigi456");
+        cardClash.getTorneoCorrente().getGiocatori().put(g1.getEmail(), g1);
+        cardClash.getTorneoCorrente().getGiocatori().put(g2.getEmail(), g2);
+        cardClash.confermaCreazione();
+        cardClash.creaTabellone(cardClash.getTorneoCorrente().getCodice());
+        cardClash.aggiornaTabellone();
+        assertNotNull(cardClash.getTorneoCorrente().getTabellone());
+    }
+
+    /*
+     * @Test
+     * public void testAggiornaPunteggio() {
+     * cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
+     * cardClash.selezioneFormato(1);
+     * cardClash.aggiornaPunteggio();
+     * assertNotNull(cardClash.getTorneoCorrente().getFormato().getVictoryScore());
+     * }
+     */
 
 }

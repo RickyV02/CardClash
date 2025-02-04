@@ -89,10 +89,11 @@ public class Torneo {
 
     public Tabellone creaTabellone() throws GiocatoriNotPotenzaDiDueException {
         List<Giocatore> giocatoriIscritti = getGiocatoriList();
-        inizializzPunteggi(giocatoriIscritti);
+        inizializzaPunteggi(giocatoriIscritti);
         boolean checkPotenza = isPotenzaDiDue(giocatoriIscritti.size());
         if (checkPotenza) {
-            return new Tabellone(giocatoriIscritti);
+            tabelloneCorrente = new Tabellone(giocatoriIscritti);
+            return tabelloneCorrente;
         } else {
             throw new GiocatoriNotPotenzaDiDueException(giocatoriIscritti.size());
         }
@@ -142,7 +143,7 @@ public class Torneo {
         return giocatoriIscritti;
     }
 
-    public void inizializzPunteggi(List<Giocatore> giocatoriIscritti) {
+    public void inizializzaPunteggi(List<Giocatore> giocatoriIscritti) {
         for (Iterator<Giocatore> iterator = giocatoriIscritti.iterator(); iterator.hasNext();) {
             Giocatore giocatore = iterator.next();
             giocatore.setPunteggio(this.codice);
