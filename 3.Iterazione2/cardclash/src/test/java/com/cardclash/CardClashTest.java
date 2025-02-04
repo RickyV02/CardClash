@@ -225,6 +225,11 @@ public class CardClashTest {
     @Test
     public void testCreaTabellone() {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
+        Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
+        Giocatore g2 = new Giocatore("Luigi Bianchi", "luigi@mail.com", "password456", "luigi456");
+        cardClash.getTorneoCorrente().getGiocatori().put(g1.getEmail(), g1);
+        cardClash.getTorneoCorrente().getGiocatori().put(g2.getEmail(), g2);
+        cardClash.confermaCreazione();
         Tabellone tabellone = cardClash.creaTabellone(cardClash.getTorneoCorrente().getCodice());
         assertNotNull(tabellone);
     }
@@ -284,14 +289,20 @@ public class CardClashTest {
         assertNotNull(cardClash.getTorneoCorrente().getTabellone());
     }
 
-    /*
-     * @Test
-     * public void testAggiornaPunteggio() {
-     * cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
-     * cardClash.selezioneFormato(1);
-     * cardClash.aggiornaPunteggio();
-     * assertNotNull(cardClash.getTorneoCorrente().getFormato().getVictoryScore());
-     * }
-     */
+    @Test
+    public void testAggiornaPunteggio() {
+        cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
+        Torneo t = cardClash.getTorneoCorrente();
+        Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
+        Giocatore g2 = new Giocatore("Luigi Bianchi", "luigi@mail.com", "password456", "luigi456");
+        cardClash.getTorneoCorrente().getGiocatori().put(g1.getEmail(), g1);
+        cardClash.getTorneoCorrente().getGiocatori().put(g2.getEmail(), g2);
+        cardClash.selezionaFormato(1);
+        cardClash.confermaCreazione();
+        cardClash.creaTabellone(cardClash.getTorneoCorrente().getCodice());
+        assertEquals(0.0f, g1.getPunteggio(t.getCodice()), 1.0);
+        cardClash.aggiornaPunteggio();
+        assertEquals(2.0f, g1.getPunteggio(t.getCodice()), 1.0);
+    }
 
 }

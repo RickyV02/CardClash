@@ -1,8 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.cardclash.TorneoTest
 -------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in com.cardclash.TorneoTest
-testIsAperto(com.cardclash.TorneoTest)  Time elapsed: 0 s  <<< ERROR!
-java.lang.NullPointerException: Cannot invoke "com.cardclash.FormatoTorneo.getNumMaxGiocatori()" because "this.formato" is null
-	at com.cardclash.TorneoTest.testIsAperto(TorneoTest.java:56)
-
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s - in com.cardclash.TorneoTest

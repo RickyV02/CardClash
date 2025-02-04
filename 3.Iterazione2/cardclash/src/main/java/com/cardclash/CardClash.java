@@ -90,7 +90,6 @@ public class CardClash {
                 iterator.remove();
             }
         }
-
         return elencoTornei;
     }
 
