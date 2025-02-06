@@ -1,0 +1,17 @@
+com\cardclash\GiocatoreGiaRegistratoException.class
+com\cardclash\GiocatoriNotPotenzaDiDueException.class
+com\cardclash\FormatoTorneo1v1.class
+com\cardclash\FormatoTorneoPauper.class
+com\cardclash\Giocatore.class
+com\cardclash\FormatoTorneo.class
+com\cardclash\FormatoTorneo1v1$1.class
+com\cardclash\Tabellone.class
+com\cardclash\CardClash.class
+com\cardclash\FormatoTorneoMonotype.class
+com\cardclash\FormatoTorneoPauper$1.class
+com\cardclash\TipoMazzo.class
+com\cardclash\FormatoTorneoMonotype$1.class
+com\cardclash\Partita.class
+com\cardclash\Mazzo.class
+com\cardclash\Torneo.class
+com\cardclash\Gioco.class

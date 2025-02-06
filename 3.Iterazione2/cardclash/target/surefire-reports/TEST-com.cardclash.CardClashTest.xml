@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="com.cardclash.CardClashTest" time="0.39" tests="21" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="com.cardclash.CardClashTest" time="0.326" tests="21" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="19"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,7 +15,7 @@
     <property name="user.country" value="IT"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-19\bin"/>
-    <property name="sun.java.command" value="C:\Users\ricky\AppData\Local\Temp\surefire14836496864632390780\surefirebooter2976477745560797449.jar C:\Users\ricky\AppData\Local\Temp\surefire14836496864632390780 2025-02-05T15-29-15_909-jvmRun1 surefire6605201722284132209tmp surefire_09897865286664623128tmp"/>
+    <property name="sun.java.command" value="C:\Users\ricky\AppData\Local\Temp\surefire18219108874576232337\surefirebooter14936337299277382347.jar C:\Users\ricky\AppData\Local\Temp\surefire18219108874576232337 2025-02-06T10-33-42_639-jvmRun1 surefire7583805284501783551tmp surefire_08025464087392877802tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="test" value="com.cardclash.CardClashTest"/>
     <property name="surefire.test.class.path" value="C:\Users\ricky\OneDrive - Università degli Studi di Catania\UNIVERSITA&apos;\Magistrale\LM-32 Ingegneria Informatica\Primo Anno\Ingegneria del software\CardClash\3.Iterazione2\cardclash\target\test-classes;C:\Users\ricky\OneDrive - Università degli Studi di Catania\UNIVERSITA&apos;\Magistrale\LM-32 Ingegneria Informatica\Primo Anno\Ingegneria del software\CardClash\3.Iterazione2\cardclash\target\classes;C:\Users\ricky\.m2\repository\junit\junit\4.13\junit-4.13.jar;C:\Users\ricky\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;"/>
@@ -31,7 +31,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\ricky\AppData\Local\Temp\surefire14836496864632390780\surefirebooter2976477745560797449.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\ricky\AppData\Local\Temp\surefire18219108874576232337\surefirebooter14936337299277382347.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="19.0.2+7-44"/>
@@ -60,25 +60,25 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="63.0"/>
   </properties>
-  <testcase name="testSelezioneFormato" classname="com.cardclash.CardClashTest" time="0.027"/>
-  <testcase name="testConfermaTabellone" classname="com.cardclash.CardClashTest" time="0.026"/>
+  <testcase name="testSelezioneFormato" classname="com.cardclash.CardClashTest" time="0.023"/>
+  <testcase name="testConfermaTabellone" classname="com.cardclash.CardClashTest" time="0.022"/>
   <testcase name="testLoadFormati" classname="com.cardclash.CardClashTest" time="0.001"/>
-  <testcase name="testInserimentoTipoMazzo" classname="com.cardclash.CardClashTest" time="0"/>
+  <testcase name="testInserimentoTipoMazzo" classname="com.cardclash.CardClashTest" time="0.001"/>
   <testcase name="testConfermaRegistrazione" classname="com.cardclash.CardClashTest" time="0.001"/>
   <testcase name="testSingletonInstance" classname="com.cardclash.CardClashTest" time="0.001"/>
   <testcase name="testVisualizzaTabellone" classname="com.cardclash.CardClashTest" time="0.002"/>
-  <testcase name="testMostraTorneiDisponibili" classname="com.cardclash.CardClashTest" time="0.005"/>
-  <testcase name="testSelezionaTipo" classname="com.cardclash.CardClashTest" time="0.007"/>
-  <testcase name="testSelezionaTorneo" classname="com.cardclash.CardClashTest" time="0.001"/>
-  <testcase name="testInserimentoMazzo" classname="com.cardclash.CardClashTest" time="0.003"/>
-  <testcase name="testSelezionaFormato" classname="com.cardclash.CardClashTest" time="0.002"/>
-  <testcase name="testEliminaGiocatore" classname="com.cardclash.CardClashTest" time="0.007"/>
-  <testcase name="testAggiornaTabellone" classname="com.cardclash.CardClashTest" time="0.004"/>
-  <testcase name="testCreaTorneo" classname="com.cardclash.CardClashTest" time="0.001"/>
-  <testcase name="testRegistraGiocatore" classname="com.cardclash.CardClashTest" time="0.005"/>
-  <testcase name="testConfermaIscrizione" classname="com.cardclash.CardClashTest" time="0.003"/>
-  <testcase name="testConfermaCreazione" classname="com.cardclash.CardClashTest" time="0.001"/>
-  <testcase name="testConfermaInserimentoTipo" classname="com.cardclash.CardClashTest" time="0.005"/>
-  <testcase name="testAggiornaPunteggio" classname="com.cardclash.CardClashTest" time="0.002"/>
-  <testcase name="testCreaTabellone" classname="com.cardclash.CardClashTest" time="0.003"/>
+  <testcase name="testMostraTorneiDisponibili" classname="com.cardclash.CardClashTest" time="0.002"/>
+  <testcase name="testSelezionaTipo" classname="com.cardclash.CardClashTest" time="0.004"/>
+  <testcase name="testSelezionaTorneo" classname="com.cardclash.CardClashTest" time="0.002"/>
+  <testcase name="testInserimentoMazzo" classname="com.cardclash.CardClashTest" time="0.001"/>
+  <testcase name="testSelezionaFormato" classname="com.cardclash.CardClashTest" time="0"/>
+  <testcase name="testEliminaGiocatore" classname="com.cardclash.CardClashTest" time="0.004"/>
+  <testcase name="testAggiornaTabellone" classname="com.cardclash.CardClashTest" time="0.002"/>
+  <testcase name="testCreaTorneo" classname="com.cardclash.CardClashTest" time="0"/>
+  <testcase name="testRegistraGiocatore" classname="com.cardclash.CardClashTest" time="0.004"/>
+  <testcase name="testConfermaIscrizione" classname="com.cardclash.CardClashTest" time="0.004"/>
+  <testcase name="testConfermaCreazione" classname="com.cardclash.CardClashTest" time="0.002"/>
+  <testcase name="testConfermaInserimentoTipo" classname="com.cardclash.CardClashTest" time="0.002"/>
+  <testcase name="testAggiornaPunteggio" classname="com.cardclash.CardClashTest" time="0.003"/>
+  <testcase name="testCreaTabellone" classname="com.cardclash.CardClashTest" time="0.002"/>
 </testsuite>

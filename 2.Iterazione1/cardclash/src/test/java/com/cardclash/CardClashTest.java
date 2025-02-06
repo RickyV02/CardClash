@@ -27,7 +27,7 @@ public class CardClashTest {
     public void clearTest() {
         cardClash.setTorneoCorrente(null);
         cardClash.setGiocatoreCorrente(null);
-        cardClash.getTornei().clear();
+        cardClash.clearTornei();
         cardClash.getGiocatori().clear();
     }
 

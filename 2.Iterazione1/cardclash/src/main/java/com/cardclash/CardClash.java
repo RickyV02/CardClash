@@ -97,6 +97,10 @@ public class CardClash {
         return elencoTornei;
     }
 
+    public void clearTornei() {
+        tornei.clear();
+    }
+
     public Torneo selezionaTorneo(Integer codTorneo) {
         Torneo t = tornei.get(codTorneo);
         setTorneoCorrente(t);
