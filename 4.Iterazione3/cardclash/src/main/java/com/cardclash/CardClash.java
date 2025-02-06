@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CardClash {
 
@@ -88,7 +89,7 @@ public class CardClash {
         List<Torneo> elencoTornei = getTorneiList();
         for (Iterator<Torneo> iterator = elencoTornei.iterator(); iterator.hasNext();) {
             Torneo t = iterator.next();
-            if (!t.isAperto()) {
+            if (t.isTerminato() || !t.isAperto()) {
                 iterator.remove();
             }
         }
@@ -169,6 +170,10 @@ public class CardClash {
     // Estensione 5.a implementata (UC5)
     public Tabellone creaTabellone(Integer codTorneo) {
         Torneo t = tornei.get(codTorneo);
+        if (t.isTerminato()) {
+            System.out.println("Il torneo è già terminato, non è possibile creare un nuovo tabellone.");
+            return null;
+        }
         setTorneoCorrente(t);
         try {
             return t.creaTabellone();
@@ -202,6 +207,51 @@ public class CardClash {
     public void aggiornaPunteggio() {
         FormatoTorneo f = torneoCorrente.getFormato();
         torneoCorrente.aggiornaPunteggi(f.getVictoryScore());
+    }
+
+    public List<Giocatore> visualizzaClassifica(Integer codTorneo) {
+        return tornei.get(codTorneo).getClassifica();
+    }
+
+    public Map<Integer, Torneo> getTorneiDaConcludere() {
+        return tornei.entrySet().stream()
+                .filter(entry -> !entry.getValue().isTerminato())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public void aggiornaELO(Integer codTorneo) {
+        Torneo t = tornei.get(codTorneo);
+        torneoCorrente = t;
+        t.aggiornaELO();
+    }
+
+    // Estensione 9.b e 9.c implementata
+    public FormatoTorneo creaNuovoFormato(Integer codice, String nome, String gioco, Integer numMaxGiocatori,
+            Float victoryScore, Float penaltyScore) {
+        if (formati.containsKey(codice)) {
+            System.out.println("Formato già esistente");
+            return null;
+        }
+
+        Gioco giocoEnum;
+        try {
+            giocoEnum = Gioco.valueOf(gioco);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Errore: il gioco '" + gioco + "' non è valido.");
+            return null;
+        }
+
+        formatoCorrente = new FormatoTorneoPersonalizzato(codice, nome, giocoEnum, numMaxGiocatori, victoryScore,
+                penaltyScore);
+        return formatoCorrente;
+    }
+
+    public void confermaFormato() {
+        formati.put(formatoCorrente.getCodice(), formatoCorrente);
+    }
+
+    public void setVincitore() {
+        torneoCorrente.concludiTorneo();
     }
 
     public FormatoTorneo getFormatoCorrente() {

@@ -91,6 +91,20 @@ public class Giocatore {
         return mazziGiocatore;
     }
 
+    public float getELO() {
+        return elo;
+    }
+
+    public void setELO(Float elo) {
+        this.elo = elo;
+    }
+
+    public void aggiornaELO(Integer codice) {
+        Float currentELO = getELO();
+        Float punteggio = getPunteggio(codice);
+        setELO(currentELO + punteggio);
+    }
+
     @Override
     public String toString() {
         return "Giocatore{"

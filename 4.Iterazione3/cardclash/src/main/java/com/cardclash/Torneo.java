@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -16,8 +17,10 @@ public class Torneo {
     private final LocalDate data;
     private final LocalTime orario;
     private final String luogo;
+    private boolean terminato;
     private final Map<String, Giocatore> giocatori;
     private final Map<Integer, Mazzo> mazziTorneo;
+    private Giocatore vincitore;
     private FormatoTorneo formato;
     private Integer numGiocatori;
     private Tabellone tabellone;
@@ -28,9 +31,11 @@ public class Torneo {
         this.data = data;
         this.orario = orario;
         this.luogo = luogo;
+        this.terminato = false;
         this.giocatori = new HashMap<>();
         this.mazziTorneo = new HashMap<>();
         this.numGiocatori = 0;
+        this.vincitore = null;
     }
 
     private void generaCodice() {
@@ -49,6 +54,10 @@ public class Torneo {
 
     public String getNome() {
         return nome;
+    }
+
+    public boolean isTerminato() {
+        return terminato;
     }
 
     // Setter per il formato
@@ -114,6 +123,26 @@ public class Torneo {
 
     public void aggiornaPunteggi(Float punteggio) {
         tabelloneCorrente.aggiornaPunteggi(codice, punteggio);
+    }
+
+    public List<Giocatore> getClassifica() {
+        List<Giocatore> classifica = new ArrayList<>(giocatori.values());
+        classifica.sort(Comparator.comparingDouble((Giocatore g) -> g.getPunteggio(codice)).reversed());
+        return classifica;
+    }
+
+    public void aggiornaELO() {
+        List<Giocatore> listaGiocatori = getGiocatoriList();
+
+        for (Iterator<Giocatore> iterator = listaGiocatori.iterator(); iterator.hasNext();) {
+            Giocatore g = iterator.next();
+            g.aggiornaELO(codice);
+        }
+    }
+
+    public void concludiTorneo() {
+        terminato = true;
+        vincitore = getClassifica().get(0);
     }
 
     public void setTabellone() {
