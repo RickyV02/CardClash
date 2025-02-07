@@ -142,8 +142,17 @@ public class Torneo {
 
     public void concludiTorneo() {
         terminato = true;
-        vincitore = getClassifica().get(0);
+        if (!getClassifica().isEmpty()) {
+            vincitore = getClassifica().get(0);
+        } else {
+            vincitore = null;
+        }
     }
+
+    public Giocatore getVincitore() {
+        return vincitore;
+    }
+
 
     public void setTabellone() {
         tabellone = tabelloneCorrente;

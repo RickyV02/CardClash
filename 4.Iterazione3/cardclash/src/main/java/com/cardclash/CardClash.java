@@ -225,11 +225,15 @@ public class CardClash {
         t.aggiornaELO();
     }
 
+    public void setVincitore() {
+        torneoCorrente.concludiTorneo();
+    }
+
     // Estensione 9.b e 9.c implementata
     public FormatoTorneo creaNuovoFormato(Integer codice, String nome, String gioco, Integer numMaxGiocatori,
-            Float victoryScore, Float penaltyScore) {
+            Float victoryScore, Float penaltyScore) throws GiocoNonSupportatoException {
         if (formati.containsKey(codice)) {
-            System.out.println("Formato già esistente");
+            System.out.println("Il codice " + codice + " è già stato utilizzato per un altro formato.");
             return null;
         }
 
@@ -237,8 +241,7 @@ public class CardClash {
         try {
             giocoEnum = Gioco.valueOf(gioco);
         } catch (IllegalArgumentException e) {
-            System.out.println("Errore: il gioco '" + gioco + "' non è valido.");
-            return null;
+            throw new GiocoNonSupportatoException(gioco);
         }
 
         formatoCorrente = new FormatoTorneoPersonalizzato(codice, nome, giocoEnum, numMaxGiocatori, victoryScore,
@@ -248,10 +251,6 @@ public class CardClash {
 
     public void confermaFormato() {
         formati.put(formatoCorrente.getCodice(), formatoCorrente);
-    }
-
-    public void setVincitore() {
-        torneoCorrente.concludiTorneo();
     }
 
     public FormatoTorneo getFormatoCorrente() {

@@ -5,10 +5,10 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.junit.Before;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TabelloneTest {
@@ -42,7 +42,7 @@ public class TabelloneTest {
     }
 
     @Test
-    public void testInizializzazionePartite() {
+    public void testInizializzaPartite() {
         Map<Integer, Partita> partite = tabellone.getPartite();
         assertNotNull(partite);
         assertEquals(2, partite.size());
@@ -77,7 +77,7 @@ public class TabelloneTest {
         tabellone.aggiornaPunteggi(torneo.getCodice(), 10.0f);
 
         for (Giocatore g : giocatori) {
-            assertEquals(10.0f, g.getPunteggio(torneo.getCodice()), 1);
+            assertEquals(10.0f, g.getPunteggio(torneo.getCodice()), 0.01);
         }
     }
 }

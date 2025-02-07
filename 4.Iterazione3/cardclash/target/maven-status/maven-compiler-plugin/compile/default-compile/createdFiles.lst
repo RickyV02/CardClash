@@ -9,6 +9,7 @@ com\cardclash\Tabellone.class
 com\cardclash\CardClash.class
 com\cardclash\FormatoTorneoMonotype.class
 com\cardclash\FormatoTorneoPauper$1.class
+com\cardclash\GiocoNonSupportatoException.class
 com\cardclash\TipoMazzo.class
 com\cardclash\FormatoTorneoMonotype$1.class
 com\cardclash\Partita.class

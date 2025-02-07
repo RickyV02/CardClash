@@ -42,7 +42,7 @@ public class TabelloneTest {
     }
 
     @Test
-    public void testInizializzazionePartite() {
+    public void testInizializzaPartite() {
         Map<Integer, Partita> partite = tabellone.getPartite();
         assertNotNull(partite);
         assertEquals(2, partite.size());

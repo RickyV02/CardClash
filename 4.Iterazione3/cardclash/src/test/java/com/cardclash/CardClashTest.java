@@ -1,6 +1,7 @@
 package com.cardclash;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -127,6 +128,13 @@ public class CardClashTest {
         assertTrue(cardClash.mostraTorneiDisponibili().contains(t3));
         assertTrue(cardClash.mostraTorneiDisponibili().contains(t4));
 
+        cardClash.creaTorneo("Torneo 5", LocalDate.of(2026, 12, 13), "14:00", "Luogo 4");
+        Torneo t5 = cardClash.getTorneoCorrente();
+        t5.setFormato(f);
+        cardClash.confermaCreazione();
+        t5.concludiTorneo();
+        assertFalse(cardClash.mostraTorneiDisponibili().contains(t5));
+
     }
 
     @Test
@@ -223,11 +231,15 @@ public class CardClashTest {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
         Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
         Giocatore g2 = new Giocatore("Luigi Bianchi", "luigi@mail.com", "password456", "luigi456");
+        Torneo t = cardClash.getTorneoCorrente();
         cardClash.getTorneoCorrente().getGiocatori().put(g1.getEmail(), g1);
         cardClash.getTorneoCorrente().getGiocatori().put(g2.getEmail(), g2);
         cardClash.confermaCreazione();
         Tabellone tabellone = cardClash.creaTabellone(cardClash.getTorneoCorrente().getCodice());
         assertNotNull(tabellone);
+        assertEquals(1, tabellone.getPartite().size());
+        t.concludiTorneo();
+        assertNull(cardClash.creaTabellone(t.getCodice()));
     }
 
     @Test
@@ -296,9 +308,118 @@ public class CardClashTest {
         cardClash.selezionaFormato(1);
         cardClash.confermaCreazione();
         cardClash.creaTabellone(cardClash.getTorneoCorrente().getCodice());
-        assertEquals(0.0f, g1.getPunteggio(t.getCodice()), 1.0);
+        assertEquals(0.0f, g1.getPunteggio(t.getCodice()), 0.01);
         cardClash.aggiornaPunteggio();
-        assertEquals(2.0f, g1.getPunteggio(t.getCodice()), 1.0);
+        assertEquals(2.0f, g1.getPunteggio(t.getCodice()), 0.01);
+    }
+
+    @Test
+    public void testVisualizzaClassifica() {
+        cardClash.creaTorneo("Torneo Classifica", LocalDate.now(), "12:00", "Roma");
+        Torneo t = cardClash.getTorneoCorrente();
+        cardClash.confermaCreazione();
+        int codTorneo = t.getCodice();
+
+        Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password", "mario");
+        Giocatore g2 = new Giocatore("Luigi Bianchi", "luigi@mail.com", "password", "luigi");
+        t.getGiocatori().put(g1.getEmail(), g1);
+        t.getGiocatori().put(g2.getEmail(), g2);
+
+        g1.setPunteggio(codTorneo);
+        g2.setPunteggio(codTorneo);
+        g1.addPunteggio(codTorneo, 5.0f);
+        g2.addPunteggio(codTorneo, 10.0f);
+
+        List<Giocatore> classifica = cardClash.visualizzaClassifica(codTorneo);
+        assertEquals(g2, classifica.get(0));
+        assertEquals(g1, classifica.get(1));
+    }
+
+    @Test
+    public void testGetTorneiDaConcludere() {
+        // Crea il torneo A (non terminato)
+        cardClash.creaTorneo("Torneo A", LocalDate.now(), "12:00", "Roma");
+        Torneo t1 = cardClash.getTorneoCorrente();
+        cardClash.confermaCreazione();
+
+        // Crea il torneo B e lo conclude
+        cardClash.creaTorneo("Torneo B", LocalDate.now(), "13:00", "Milano");
+        Torneo t2 = cardClash.getTorneoCorrente();
+        cardClash.confermaCreazione();
+        t2.concludiTorneo();
+
+        Map<Integer, Torneo> torneiDaConcludere = cardClash.getTorneiDaConcludere();
+        assertTrue(torneiDaConcludere.containsKey(t1.getCodice()));
+        assertFalse(torneiDaConcludere.containsKey(t2.getCodice()));
+    }
+
+    @Test
+    public void testAggiornaELO() {
+        cardClash.creaTorneo("Torneo ELO", LocalDate.now(), "12:00", "Roma");
+        Torneo t = cardClash.getTorneoCorrente();
+        cardClash.confermaCreazione();
+        int codTorneo = t.getCodice();
+        Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "pass", "mario");
+        Giocatore g2 = new Giocatore("Luigi Bianchi", "luigi@mail.com", "pass", "luigi");
+        t.getGiocatori().put(g1.getEmail(), g1);
+        t.getGiocatori().put(g2.getEmail(), g2);
+
+        g1.setPunteggio(codTorneo);
+        g2.setPunteggio(codTorneo);
+        g1.addPunteggio(codTorneo, 10.0f);
+        g2.addPunteggio(codTorneo, 20.0f);
+
+        cardClash.aggiornaELO(codTorneo);
+
+        assertEquals(10.0f, g1.getELO(), 0.01);
+        assertEquals(20.0f, g2.getELO(), 0.01);
+    }
+
+    @Test
+    public void testSetVincitore() {
+        cardClash.creaTorneo("Torneo Vincitore", LocalDate.now(), "12:00", "Roma");
+        Torneo t = cardClash.getTorneoCorrente();
+        cardClash.confermaCreazione();
+        Integer codTorneo = t.getCodice();
+        Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "pass", "mario");
+        Giocatore g2 = new Giocatore("Luigi Bianchi", "luigi@mail.com", "pass", "luigi");
+        t.getGiocatori().put(g1.getEmail(), g1);
+        t.getGiocatori().put(g2.getEmail(), g2);
+        g1.setPunteggio(codTorneo);
+        g2.setPunteggio(codTorneo);
+        g1.addPunteggio(codTorneo, 10.0f);
+        g2.addPunteggio(codTorneo, 20.0f);
+
+        assertFalse(t.isTerminato());
+
+        cardClash.setVincitore();
+
+        assertSame(g2, t.getVincitore());
+        assertTrue(t.isTerminato());
+    }
+
+    @Test
+    public void testCreaNuovoFormato() throws GiocoNonSupportatoException {
+        // Caso valido: crea un nuovo formato con un gioco valido
+        FormatoTorneo formato = cardClash.creaNuovoFormato(100, "Formato Test", "MAGIC", 16, 1.0f, -1.0f);
+        assertNotNull(formato);
+        assertEquals(100, formato.getCodice().intValue());
+        assertEquals("Formato Test", formato.getNome());
+
+        // Caso non valido: il gioco passato non è presente nell'enum, quindi deve lanciare l'eccezione
+        assertNotNull(assertThrows(GiocoNonSupportatoException.class, () -> {
+            cardClash.creaNuovoFormato(101, "Formato Invalido", "NONESISTENTE", 16, 1.0f, -1.0f);
+        }));
+    }
+
+    @Test
+    public void testConfermaFormato() throws GiocoNonSupportatoException {
+        FormatoTorneo formato = cardClash.creaNuovoFormato(102, "Formato Conferma", "MAGIC", 16, 1.0f, -1.0f);
+        assertFalse(cardClash.getFormati().containsKey(102));
+
+        cardClash.confermaFormato();
+        assertTrue(cardClash.getFormati().containsKey(102));
+        assertSame(formato, cardClash.getFormati().get(102));
     }
 
 }

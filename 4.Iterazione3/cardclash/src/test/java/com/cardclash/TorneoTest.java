@@ -24,6 +24,8 @@ public class TorneoTest {
     @Before
     public void setUp() {
         torneo = new Torneo("Torneo di Prova", LocalDate.of(2026, 5, 20), LocalTime.of(10, 0), "Roma");
+        FormatoTorneo formatoPauper = new FormatoTorneoPauper(1, "Pauper", Gioco.MAGIC, 16, 2.0f, 3.0f);
+        torneo.setFormato(formatoPauper);
         giocatore = new Giocatore("Lorenzo Bianchi", "lorenzo@mail.com", "password123", "lore25");
         mazzo = new Mazzo("Mazzo di prova");
         mazzo.setCodice();
@@ -48,9 +50,9 @@ public class TorneoTest {
 
     @Test
     public void testAggiungiGiocatore() {
-        assertEquals(4, torneo.getGiocatori().size());
+        int iniziale = torneo.getGiocatori().size();
         torneo.aggiungiGiocatore(giocatore.getEmail(), giocatore);
-        assertEquals(5, torneo.getGiocatori().size());
+        assertEquals(iniziale + 1, torneo.getGiocatori().size());
         assertEquals(giocatore, torneo.getGiocatore(giocatore.getEmail()));
         assertNotNull(torneo.getGiocatori());
     }
@@ -84,4 +86,95 @@ public class TorneoTest {
         assertNotNull(torneo.getTabellone());
     }
 
+    @Test
+    public void testIsAperto() {
+        assertTrue(torneo.isAperto());
+        Torneo t2 = new Torneo("Torneo Aperto", LocalDate.of(2026, 5, 21), LocalTime.of(11, 0), "Milano");
+        t2.setFormato(torneo.getFormato());  // stessa configurazione, numMaxGiocatori=16
+        for (int i = 0; i < 16; i++) {
+            t2.aggiungiGiocatore("g" + i + "@mail.com", new Giocatore("Giocatore" + i, "g" + i + "@mail.com", "pass", "nick" + i));
+        }
+        assertFalse(t2.isAperto());
+    }
+
+    @Test
+    public void testIsPotenzaDiDue() {
+        // Testa alcuni valori
+        assertTrue(torneo.isPotenzaDiDue(1));
+        assertTrue(torneo.isPotenzaDiDue(2));
+        assertTrue(torneo.isPotenzaDiDue(4));
+        assertFalse(torneo.isPotenzaDiDue(3));
+        assertFalse(torneo.isPotenzaDiDue(0));
+    }
+
+    @Test
+    public void testEliminaGiocatore() throws GiocatoriNotPotenzaDiDueException {
+        Tabellone tabellone = torneo.creaTabellone();
+        assertNotNull(tabellone);
+        int iniziale = tabellone.getGiocatori().size();
+        torneo.eliminaGiocatore("paolo@mail.com");
+        assertEquals(iniziale - 1, tabellone.getGiocatori().size());
+        boolean presente = tabellone.getGiocatori().stream()
+                .anyMatch(g -> g.getEmail().equals("paolo@mail.com"));
+        assertFalse(presente);
+    }
+
+    @Test
+    public void testGetClassifica() {
+        Integer codTorneo = torneo.getCodice();
+        int i = 0;
+        for (Giocatore g : torneo.getGiocatori().values()) {
+            g.setPunteggio(codTorneo);
+            switch (i) {
+                case 0 ->
+                    g.addPunteggio(codTorneo, 10.0f);
+                case 1 ->
+                    g.addPunteggio(codTorneo, 20.0f);
+                case 2 ->
+                    g.addPunteggio(codTorneo, 15.0f);
+                default ->
+                    g.addPunteggio(codTorneo, 5.0f);
+            }
+            i++;
+        }
+        List<Giocatore> classifica = torneo.getClassifica();
+        assertNotNull(classifica);
+        assertEquals(20.0f, classifica.get(0).getPunteggio(codTorneo), 0.01);
+    }
+
+    @Test
+    public void testAggiornaELO() {
+        Integer codTorneo = torneo.getCodice();
+        for (Giocatore g : torneo.getGiocatori().values()) {
+            g.setPunteggio(codTorneo);
+        }
+        torneo.getGiocatore("mario@mail.com").addPunteggio(codTorneo, 12.0f);
+        torneo.getGiocatore("luigi@mail.com").addPunteggio(codTorneo, 8.0f);
+        torneo.getGiocatore("giovanni@mail.com").addPunteggio(codTorneo, 5.0f);
+        torneo.getGiocatore("paolo@mail.com").addPunteggio(codTorneo, 20.0f);
+        torneo.aggiornaELO();
+
+        assertEquals(12.0f, torneo.getGiocatore("mario@mail.com").getELO(), 0.01);
+        assertEquals(8.0f, torneo.getGiocatore("luigi@mail.com").getELO(), 0.01);
+        assertEquals(5.0f, torneo.getGiocatore("giovanni@mail.com").getELO(), 0.01);
+        assertEquals(20.0f, torneo.getGiocatore("paolo@mail.com").getELO(), 0.01);
+    }
+
+    @Test
+    public void testConcludiTorneo() {
+        Integer codTorneo = torneo.getCodice();
+        for (Giocatore g : torneo.getGiocatori().values()) {
+            g.setPunteggio(codTorneo);
+        }
+        torneo.getGiocatore("mario@mail.com").addPunteggio(codTorneo, 10.0f);
+        torneo.getGiocatore("luigi@mail.com").addPunteggio(codTorneo, 20.0f);
+        torneo.getGiocatore("giovanni@mail.com").addPunteggio(codTorneo, 30.0f);
+        torneo.getGiocatore("paolo@mail.com").addPunteggio(codTorneo, 5.0f);
+        assertFalse(torneo.isTerminato());
+
+        torneo.concludiTorneo();
+        assertTrue(torneo.isTerminato());
+        assertNotNull(torneo.getVincitore());
+        assertEquals("giovanni@mail.com", torneo.getVincitore().getEmail());
+    }
 }

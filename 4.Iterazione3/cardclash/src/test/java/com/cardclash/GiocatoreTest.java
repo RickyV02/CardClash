@@ -45,14 +45,23 @@ public class GiocatoreTest {
     @Test
     public void testSetPunteggio() {
         giocatore.setPunteggio(torneo.getCodice());
-        assertEquals(0.0f, giocatore.getPunteggio(torneo.getCodice()), 1);
+        assertEquals(0.0f, giocatore.getPunteggio(torneo.getCodice()), 0.01);
     }
 
     @Test
     public void testAddPunteggio() {
         giocatore.setPunteggio(torneo.getCodice());
         giocatore.addPunteggio(torneo.getCodice(), 10.0f);
-        assertEquals(10.0f, giocatore.getPunteggio(torneo.getCodice()), 1);
+        assertEquals(10.0f, giocatore.getPunteggio(torneo.getCodice()), 0.01);
+    }
+
+    @Test
+    public void testAggiornaELO() {
+        Integer codTorneo = torneo.getCodice();
+        giocatore.setPunteggio(codTorneo);
+        giocatore.addPunteggio(codTorneo, 12.0f);
+        giocatore.aggiornaELO(codTorneo);
+        assertEquals(12.0f, giocatore.getELO(), 0.01f);
     }
 
 }

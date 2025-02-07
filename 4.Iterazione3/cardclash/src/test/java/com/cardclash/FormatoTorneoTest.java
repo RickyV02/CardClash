@@ -12,12 +12,14 @@ public class FormatoTorneoTest {
     private FormatoTorneo formatoPauper;
     private FormatoTorneo formatoMonotype;
     private FormatoTorneo formato1v1;
+    private FormatoTorneo formatoPersonalizzato;
 
     @Before
     public void setUp() {
         formatoPauper = new FormatoTorneoPauper(1, "Pauper", Gioco.MAGIC, 16, 2.0f, 3.0f);
         formatoMonotype = new FormatoTorneoMonotype(2, "Monotype", Gioco.POKEMON, 16, 2.0f, 3.0f);
         formato1v1 = new FormatoTorneo1v1(3, "1v1", Gioco.YUGIOH, 16, 1.0f, 3.0f);
+        formatoPersonalizzato = new FormatoTorneoPersonalizzato(4, "Personalizzato", Gioco.MAGIC, 16, 2.0f, 3.0f);
     }
 
     @Test
@@ -39,6 +41,14 @@ public class FormatoTorneoTest {
         Map<Integer, TipoMazzo> tipiMazzo = formato1v1.getTipiMazzo();
         assertNotNull(tipiMazzo.values());
         assertEquals(3, tipiMazzo.size());
+    }
+
+    @Test
+    public void testLoadTipiMazzoPersonalizzato() {
+        Map<Integer, TipoMazzo> tipiMazzo = formatoPersonalizzato.getTipiMazzo();
+        assertNotNull(tipiMazzo);
+        //il formato personalizzato non ha mazzi predefiniti da caricare
+        assertEquals(0, tipiMazzo.size());
     }
 
     @Test
