@@ -47,10 +47,18 @@ public class CardClash {
         return cardClash;
     }
 
-    public void creaTorneo(String nome, LocalDate data, String orario, String luogo) {
+    public void creaTorneo(String nome, LocalDate data, String orario, String luogo) throws DataGiaPresenteException {
+        try {
+            for (Torneo t : tornei.values()) {
+                if (t.getData().equals(data)) {
+                    throw new DataGiaPresenteException();
+                }
+            }
+        } catch (DataGiaPresenteException e) {
+            System.err.println(e.getMessage());
+        }
         LocalTime o = LocalTime.parse(orario);
         this.torneoCorrente = new Torneo(nome, data, o, luogo);
-        System.out.println("Torneo creato: " + torneoCorrente.getNome());
     }
 
     public void selezionaFormato(Integer codice) {
@@ -73,7 +81,7 @@ public class CardClash {
 
     public void registraGiocatore(String nome, String mail, String password, String nickname)
             throws GiocatoreGiaRegistratoException {
-        /* Estensione 1.A del caso d'uso UC2 */
+        /* Estensione 2.A del caso d'uso UC2 */
         if (giocatori.containsKey(mail)) {
             throw new GiocatoreGiaRegistratoException("Giocatore già registrato con l'email: " + mail);
         }
@@ -251,10 +259,6 @@ public class CardClash {
 
     public void confermaFormato() {
         formati.put(formatoCorrente.getCodice(), formatoCorrente);
-    }
-
-    public Float showPlayerELO() {
-        return giocatoreCorrente.getELO();
     }
 
     public FormatoTorneo getFormatoCorrente() {

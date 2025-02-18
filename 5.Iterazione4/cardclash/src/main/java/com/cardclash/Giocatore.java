@@ -78,7 +78,7 @@ public class Giocatore {
         return punteggi;
     }
 
-    public float getPunteggio(Integer codTorneo) {
+    public Float getPunteggio(Integer codTorneo) {
         return punteggi.get(codTorneo);
     }
 
@@ -91,7 +91,7 @@ public class Giocatore {
         return mazziGiocatore;
     }
 
-    public float getELO() {
+    public Float getELO() {
         return elo;
     }
 

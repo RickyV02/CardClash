@@ -153,7 +153,6 @@ public class Torneo {
         return vincitore;
     }
 
-
     public void setTabellone() {
         tabellone = tabelloneCorrente;
     }
@@ -195,6 +194,18 @@ public class Torneo {
     // Metodo per ottenere un mazzo dato il codice
     public Mazzo getMazzo(Integer codice) {
         return mazziTorneo.get(codice);
+    }
+
+    public LocalDate getData() {
+        return data;
+    }
+
+    public LocalTime getOrario() {
+        return orario;
+    }
+
+    public String getLuogo() {
+        return luogo;
     }
 
     @Override

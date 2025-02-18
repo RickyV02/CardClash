@@ -6,7 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-
+import java.time.LocalDate;
+import java.time.LocalTime;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,13 +23,14 @@ import javax.swing.SwingUtilities;
 
 public class CardClashGUI extends JFrame {
 
-    private JPanel containerPanel;
-    private CardLayout cardLayout;
-    private LoginPanel loginPanel;
-    private MainPanel mainPanel;
-    private TesseramentoPanel tesseramentoPanel;
-    private PersistenceHandler PersistenceHandler;
-    private CardClash cardClash;
+    JPanel containerPanel;
+    CardLayout cardLayout;
+    LoginPanel loginPanel;
+    MainPanel mainPanel;
+    TesseramentoPanel tesseramentoPanel;
+    TournamentCreationPanel tournamentCreationPanel; // Nuovo pannello per la creazione del torneo
+    PersistenceHandler persistenceHandler;
+    CardClash cardClash;
 
     public CardClashGUI() {
         super("CardClash");
@@ -36,11 +38,12 @@ public class CardClashGUI extends JFrame {
         setSize(900, 600);
         setLocationRelativeTo(null);
 
-        PersistenceHandler = new PersistenceHandler();
-        cardClash = cardClash.getInstance();
+        persistenceHandler = new PersistenceHandler();
+        cardClash = CardClash.getInstance();
 
         // Carica gli utenti o crea il file XML di default
-        PersistenceHandler.loadUsers();
+        persistenceHandler.loadUsers(cardClash);
+        persistenceHandler.loadTournaments(cardClash);
 
         cardLayout = new CardLayout();
         containerPanel = new JPanel(cardLayout);
@@ -48,10 +51,12 @@ public class CardClashGUI extends JFrame {
         loginPanel = new LoginPanel(this);
         mainPanel = new MainPanel(this);
         tesseramentoPanel = new TesseramentoPanel(this);
+        tournamentCreationPanel = new TournamentCreationPanel(); // inizializza il pannello per il torneo
 
         containerPanel.add(loginPanel, "LOGIN");
         containerPanel.add(mainPanel, "MAIN");
         containerPanel.add(tesseramentoPanel, "TESSERAMENTO");
+        containerPanel.add(tournamentCreationPanel, "CREA_TORNEO");
 
         cardLayout.show(containerPanel, "LOGIN");
         add(containerPanel);
@@ -67,12 +72,17 @@ public class CardClashGUI extends JFrame {
         cardLayout.show(containerPanel, "TESSERAMENTO");
     }
 
+    public void showTournamentCreationPanel() {
+        cardLayout.show(containerPanel, "CREA_TORNEO");
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(CardClashGUI::new);
     }
 
-    private class LoginPanel extends JPanel {
+    // ======================= Inner Classes =======================
 
+    private class LoginPanel extends JPanel {
         private JTextField emailField;
         private JPasswordField passwordField;
         private JButton loginButton;
@@ -100,15 +110,16 @@ public class CardClashGUI extends JFrame {
             loginButton.addActionListener(e -> {
                 String email = emailField.getText();
                 String password = new String(passwordField.getPassword());
-                String role = PersistenceHandler.authenticate(email, password);
+                String role = persistenceHandler.authenticate(email, password);
 
                 if (role != null) {
                     Giocatore giocatore = cardClash.getGiocatore(email);
                     if (giocatore != null) {
-                        cardClash.setGiocatoreCorrente(giocatore);
+                        mainPanel.updateEloLabel(giocatore.getELO());
                         parentFrame.showMainPanel(role);
                     } else {
-                        JOptionPane.showMessageDialog(this, "Giocatore non trovato!", "Errore", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Giocatore non trovato!", "Errore",
+                                JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
                     JOptionPane.showMessageDialog(this, "Credenziali errate!", "Errore", JOptionPane.ERROR_MESSAGE);
@@ -141,13 +152,16 @@ public class CardClashGUI extends JFrame {
     }
 
     private class MainPanel extends JPanel {
-
         private JTabbedPane tabbedPane;
         private PlayerPanel playerPanel;
         private OrganizerPanel organizerPanel;
 
         public MainPanel(CardClashGUI parentFrame) {
             initComponents();
+        }
+
+        public void updateEloLabel(Float elo) {
+            playerPanel.updateElo(elo);
         }
 
         private void initComponents() {
@@ -192,35 +206,42 @@ public class CardClashGUI extends JFrame {
     }
 
     private class PlayerPanel extends JPanel {
-
         private JLabel eloLabel;
 
         public PlayerPanel() {
             setLayout(new GridLayout(4, 1, 10, 10));
-            add(new JButton("UC3: Iscrizione Torneo"));
-            add(new JButton("UC7: Visualizza Classifica"));
+            add(new JButton("Iscrizione Tornei"));
 
             eloLabel = new JLabel();
             add(eloLabel);
         }
+
+        public void updateElo(Float elo) {
+            eloLabel.setText("ELO: " + elo);
+        }
     }
 
     private class OrganizerPanel extends JPanel {
-
         public OrganizerPanel() {
             setLayout(new GridLayout(4, 2, 10, 10));
-            add(new JButton("UC1: Creazione Torneo"));
-            add(new JButton("UC4: Inserimento Tipologia Mazzo"));
-            add(new JButton("UC5: Creazione Tabellone"));
-            add(new JButton("UC6: Gestisci Eliminazione"));
-            add(new JButton("UC8: Aggiorna ELO"));
-            add(new JButton("UC9: Aggiungi Formato Torneo"));
-            add(new JButton("UC7: Visualizza Classifica"));
+
+            JButton creaTorneoButton = new JButton("Crea Torneo");
+            creaTorneoButton.addActionListener(e -> {
+                // Mostra il pannello per la creazione del torneo
+                cardLayout.show(containerPanel, "CREA_TORNEO");
+            });
+            add(creaTorneoButton);
+
+            add(new JButton("Inserimento Tipo Mazzo"));
+            add(new JButton("Genera Tabellone"));
+            add(new JButton("Elimina giocatori"));
+            add(new JButton("Visualizza Classifica"));
+            add(new JButton("Aggiorna ELO"));
+            add(new JButton("Aggiungi formato torneo"));
         }
     }
 
     private class TesseramentoPanel extends JPanel {
-
         private JTextField nomeField;
         private JTextField emailField;
         private JPasswordField passwordField;
@@ -260,8 +281,9 @@ public class CardClashGUI extends JFrame {
                 try {
                     cardClash.registraGiocatore(nome, email, password, nickname);
                     cardClash.confermaRegistrazione();
-                    PersistenceHandler.registerUser("user", email, password);
-                    JOptionPane.showMessageDialog(this, "Registrazione completata!", "Successo", JOptionPane.INFORMATION_MESSAGE);
+                    persistenceHandler.registerUser("user", nome, email, password, nickname);
+                    JOptionPane.showMessageDialog(this, "Registrazione completata!", "Successo",
+                            JOptionPane.INFORMATION_MESSAGE);
                     parentFrame.cardLayout.show(parentFrame.containerPanel, "LOGIN");
                 } catch (GiocatoreGiaRegistratoException ex) {
                     JOptionPane.showMessageDialog(this, ex.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
@@ -304,4 +326,170 @@ public class CardClashGUI extends JFrame {
             add(backButton, gbc);
         }
     }
+
+    // ======================= Pannello per la Creazione del Torneo
+    // =======================
+
+    private class TournamentCreationPanel extends JPanel {
+        private JTextField nomeField;
+        private JTextField dataField;
+        private JTextField orarioField;
+        private JTextField luogoField;
+        // Campo formato rimosso: verrà richiesto tramite popup
+        private JButton creaButton;
+        private JButton backButton;
+        private JButton confermaButton; // Bottone aggiuntivo per confermare la creazione
+
+        public TournamentCreationPanel() {
+            initComponents();
+        }
+
+        private void initComponents() {
+            setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(5, 5, 5, 5);
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+
+            add(new JLabel("Nome Torneo:"), gbc);
+            gbc.gridx = 1;
+            nomeField = new JTextField(20);
+            add(nomeField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy++;
+            add(new JLabel("Data (yyyy-MM-dd):"), gbc);
+            gbc.gridx = 1;
+            dataField = new JTextField(20);
+            add(dataField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy++;
+            add(new JLabel("Orario (HH:mm):"), gbc);
+            gbc.gridx = 1;
+            orarioField = new JTextField(20);
+            add(orarioField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy++;
+            add(new JLabel("Luogo:"), gbc);
+            gbc.gridx = 1;
+            luogoField = new JTextField(20);
+            add(luogoField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy++;
+            creaButton = new JButton("Crea Torneo");
+            add(creaButton, gbc);
+            gbc.gridx = 1;
+            backButton = new JButton("Indietro");
+            add(backButton, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            confermaButton = new JButton("Conferma Creazione");
+            confermaButton.setVisible(false); // inizialmente nascosto
+            add(confermaButton, gbc);
+
+            creaButton.addActionListener(e -> creaTorneo());
+            backButton.addActionListener(e -> cardLayout.show(containerPanel, "MAIN"));
+            confermaButton.addActionListener(e -> confermaTorneo());
+        }
+
+        private void creaTorneo() {
+            String nome = nomeField.getText().trim();
+            String dataStr = dataField.getText().trim();
+            String orarioStr = orarioField.getText().trim();
+            String luogo = luogoField.getText().trim();
+
+            if (nome.isEmpty() || dataStr.isEmpty() || orarioStr.isEmpty() || luogo.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Tutti i campi sono obbligatori!", "Errore",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            LocalDate data;
+            LocalTime orario;
+            try {
+                data = LocalDate.parse(dataStr);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Formato data non valido! Usa yyyy-MM-dd", "Errore",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            try {
+                orario = LocalTime.parse(orarioStr);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Formato orario non valido! Usa HH:mm", "Errore",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (data.isBefore(LocalDate.now())) {
+                JOptionPane.showMessageDialog(this, "La data del torneo non può essere nel passato!", "Errore",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            try {
+                cardClash.creaTorneo(nome, data, orarioStr, luogo);
+                if (cardClash.getTorneoCorrente() == null) {
+                    JOptionPane.showMessageDialog(this, "Errore durante la creazione del torneo",
+                            "Errore",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (DataGiaPresenteException dpe) {
+                JOptionPane.showMessageDialog(this, dpe.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
+                return;
+            } catch (Exception exception) {
+                JOptionPane.showMessageDialog(this, "Errore durante la creazione del torneo: " + exception.getMessage(),
+                        "Errore", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Popup per inserire il codice del formato
+            String formatoInput = JOptionPane.showInputDialog(this, "Inserisci il codice del formato:");
+            if (formatoInput == null || formatoInput.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Il formato deve essere inserito!", "Errore",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            try {
+                int formatoCodice = Integer.parseInt(formatoInput.trim());
+                cardClash.selezionaFormato(formatoCodice);
+                if (cardClash.getTorneoCorrente().getFormato() == null) {
+                    JOptionPane.showMessageDialog(this, "Formato non trovato!", "Errore", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Il formato deve essere un codice numerico!", "Errore",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Ora mostra il bottone aggiuntivo per confermare la creazione
+            confermaButton.setVisible(true);
+            JOptionPane.showMessageDialog(this,
+                    "Formato selezionato correttamente! Clicca 'Conferma Creazione' per completare.", "Informazione",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        private void confermaTorneo() {
+            PersistenceHandler.saveTournament(cardClash.getTorneoCorrente());
+            cardClash.confermaCreazione();
+            JOptionPane.showMessageDialog(this, "Torneo creato con successo!", "Successo",
+                    JOptionPane.INFORMATION_MESSAGE);
+            // Ripulisco i campi e nascondo il bottone di conferma
+            nomeField.setText("");
+            dataField.setText("");
+            orarioField.setText("");
+            luogoField.setText("");
+            confermaButton.setVisible(false);
+            cardLayout.show(containerPanel, "MAIN");
+        }
+    }
+
 }

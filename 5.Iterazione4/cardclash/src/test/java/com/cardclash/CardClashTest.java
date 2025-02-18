@@ -46,14 +46,14 @@ public class CardClashTest {
     }
 
     @Test
-    public void testCreaTorneo() {
+    public void testCreaTorneo() throws DataGiaPresenteException {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "15:00", "Luogo Test");
         Torneo torneo = cardClash.getTorneoCorrente();
         assertNotNull(torneo);
     }
 
     @Test
-    public void testSelezionaFormato() {
+    public void testSelezionaFormato() throws DataGiaPresenteException {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "15:00", "Luogo Test");
         Torneo torneo = cardClash.getTorneoCorrente();
 
@@ -66,7 +66,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testConfermaCreazione() {
+    public void testConfermaCreazione() throws DataGiaPresenteException {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "15:00", "Luogo Test");
         cardClash.confermaCreazione();
         Torneo torneo = cardClash.getTorneoCorrente();
@@ -100,7 +100,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testMostraTorneiDisponibili() {
+    public void testMostraTorneiDisponibili() throws DataGiaPresenteException {
         FormatoTorneo f = cardClash.getFormati().get(1);
         // 1. Crea tornei con date passate
         cardClash.creaTorneo("Torneo 1", LocalDate.of(2025, 01, 12), "10:00", "Luogo 1");
@@ -138,7 +138,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testSelezionaTorneo() {
+    public void testSelezionaTorneo() throws DataGiaPresenteException {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "15:00", "Luogo Test");
         Torneo t = cardClash.getTorneoCorrente();
         cardClash.confermaCreazione();
@@ -161,7 +161,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testSelezionaTipo() {
+    public void testSelezionaTipo() throws DataGiaPresenteException {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "15:00", "Luogo Test");
         cardClash.confermaCreazione();
         cardClash.selezionaFormato(1);
@@ -183,7 +183,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testConfermaIscrizione() throws GiocatoreGiaRegistratoException {
+    public void testConfermaIscrizione() throws GiocatoreGiaRegistratoException, DataGiaPresenteException {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "15:00", "Luogo Test");
         Torneo torneo = cardClash.getTorneoCorrente();
         cardClash.confermaCreazione();
@@ -227,7 +227,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testCreaTabellone() {
+    public void testCreaTabellone() throws DataGiaPresenteException {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
         Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
         Giocatore g2 = new Giocatore("Luigi Bianchi", "luigi@mail.com", "password456", "luigi456");
@@ -243,7 +243,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testConfermaTabellone() {
+    public void testConfermaTabellone() throws DataGiaPresenteException {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
         Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
         Giocatore g2 = new Giocatore("Luigi Bianchi", "luigi@mail.com", "password456", "luigi456");
@@ -256,7 +256,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testVisualizzaTabellone() {
+    public void testVisualizzaTabellone() throws DataGiaPresenteException {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
         Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
         Giocatore g2 = new Giocatore("Luigi Bianchi", "luigi@mail.com", "password456", "luigi456");
@@ -270,7 +270,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testEliminaGiocatore() {
+    public void testEliminaGiocatore() throws DataGiaPresenteException {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
         Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
         Giocatore g2 = new Giocatore("Luigi Bianchi", "luigi@mail.com", "password456", "luigi456");
@@ -285,7 +285,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testAggiornaTabellone() {
+    public void testAggiornaTabellone() throws DataGiaPresenteException {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
         Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
         Giocatore g2 = new Giocatore("Luigi Bianchi", "luigi@mail.com", "password456", "luigi456");
@@ -298,7 +298,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testAggiornaPunteggio() {
+    public void testAggiornaPunteggio() throws DataGiaPresenteException {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
         Torneo t = cardClash.getTorneoCorrente();
         Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
@@ -314,7 +314,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testVisualizzaClassifica() {
+    public void testVisualizzaClassifica() throws DataGiaPresenteException {
         cardClash.creaTorneo("Torneo Classifica", LocalDate.now(), "12:00", "Roma");
         Torneo t = cardClash.getTorneoCorrente();
         cardClash.confermaCreazione();
@@ -336,7 +336,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testGetTorneiDaConcludere() {
+    public void testGetTorneiDaConcludere() throws DataGiaPresenteException {
         // Crea il torneo A (non terminato)
         cardClash.creaTorneo("Torneo A", LocalDate.now(), "12:00", "Roma");
         Torneo t1 = cardClash.getTorneoCorrente();
@@ -354,7 +354,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testAggiornaELO() {
+    public void testAggiornaELO() throws DataGiaPresenteException {
         cardClash.creaTorneo("Torneo ELO", LocalDate.now(), "12:00", "Roma");
         Torneo t = cardClash.getTorneoCorrente();
         cardClash.confermaCreazione();
@@ -376,7 +376,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testSetVincitore() {
+    public void testSetVincitore() throws DataGiaPresenteException {
         cardClash.creaTorneo("Torneo Vincitore", LocalDate.now(), "12:00", "Roma");
         Torneo t = cardClash.getTorneoCorrente();
         cardClash.confermaCreazione();
@@ -406,7 +406,8 @@ public class CardClashTest {
         assertEquals(100, formato.getCodice().intValue());
         assertEquals("Formato Test", formato.getNome());
 
-        // Caso non valido: il gioco passato non è presente nell'enum, quindi deve lanciare l'eccezione
+        // Caso non valido: il gioco passato non è presente nell'enum, quindi deve
+        // lanciare l'eccezione
         assertNotNull(assertThrows(GiocoNonSupportatoException.class, () -> {
             cardClash.creaNuovoFormato(101, "Formato Invalido", "NONESISTENTE", 16, 1.0f, -1.0f);
         }));
