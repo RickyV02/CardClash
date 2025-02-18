@@ -7,4 +7,11 @@
         <nickname>admin</nickname>
         <elo>0.0</elo>
     </user>
+    <user role="user">
+        <nome>ricky</nome>
+        <email>ricky@gmail.com</email>
+        <password>3838bd5806d32cd91144865aa822b9551417dd2796c163d390baa7074d3067a7</password>
+        <nickname>ricky</nickname>
+        <elo>0.0</elo>
+    </user>
 </users>

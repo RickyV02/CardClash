@@ -8,6 +8,9 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,7 +31,7 @@ public class CardClashGUI extends JFrame {
     LoginPanel loginPanel;
     MainPanel mainPanel;
     TesseramentoPanel tesseramentoPanel;
-    TournamentCreationPanel tournamentCreationPanel; // Nuovo pannello per la creazione del torneo
+    TournamentCreationPanel tournamentCreationPanel; // Pannello per la creazione del torneo
     PersistenceHandler persistenceHandler;
     CardClash cardClash;
 
@@ -41,7 +44,7 @@ public class CardClashGUI extends JFrame {
         persistenceHandler = new PersistenceHandler();
         cardClash = CardClash.getInstance();
 
-        // Carica gli utenti o crea il file XML di default
+        // Carica gli utenti e i tornei dal file XML
         persistenceHandler.loadUsers(cardClash);
         persistenceHandler.loadTournaments(cardClash);
 
@@ -81,8 +84,8 @@ public class CardClashGUI extends JFrame {
     }
 
     // ======================= Inner Classes =======================
-
     private class LoginPanel extends JPanel {
+
         private JTextField emailField;
         private JPasswordField passwordField;
         private JButton loginButton;
@@ -152,6 +155,7 @@ public class CardClashGUI extends JFrame {
     }
 
     private class MainPanel extends JPanel {
+
         private JTabbedPane tabbedPane;
         private PlayerPanel playerPanel;
         private OrganizerPanel organizerPanel;
@@ -205,23 +209,137 @@ public class CardClashGUI extends JFrame {
         }
     }
 
+    // Pannello del giocatore con il bottone per l'iscrizione al torneo (UC3)
     private class PlayerPanel extends JPanel {
+
         private JLabel eloLabel;
+        private JButton iscrizioneTorneiButton;
 
         public PlayerPanel() {
             setLayout(new GridLayout(4, 1, 10, 10));
-            add(new JButton("Iscrizione Tornei"));
-
-            eloLabel = new JLabel();
+            iscrizioneTorneiButton = new JButton("Iscrizione Tornei");
+            iscrizioneTorneiButton.addActionListener(e -> iscrizioneTorneo());
+            add(iscrizioneTorneiButton);
+            eloLabel = new JLabel("ELO: ");
             add(eloLabel);
         }
 
         public void updateElo(Float elo) {
             eloLabel.setText("ELO: " + elo);
         }
+
+        private void iscrizioneTorneo() {
+            // Recupera il giocatore loggato
+            Giocatore giocatore = cardClash.getGiocatoreCorrente();
+            if (giocatore == null) {
+                JOptionPane.showMessageDialog(this, "Nessun giocatore loggato!", "Errore", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 1. Ottieni i tornei disponibili
+            List<Torneo> torneiDisponibili = cardClash.mostraTorneiDisponibili();
+
+            // Rimuovi i tornei ai quali il giocatore è già iscritto
+            List<Torneo> torneiNonIscritti = new java.util.ArrayList<>();
+            for (Torneo t : torneiDisponibili) {
+                // Supponiamo che il metodo getGiocatori() restituisca una mappa (o lista) con le email dei partecipanti
+                if (!t.getGiocatori().containsKey(giocatore.getEmail())) {
+                    torneiNonIscritti.add(t);
+                }
+            }
+
+            if (torneiNonIscritti.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Non ci sono tornei disponibili a cui non sei già iscritto!",
+                        "Informazione", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            // Crea un array di opzioni (mostrando codice, nome e data) per i tornei non iscritti
+            String[] tournamentOptions = new String[torneiNonIscritti.size()];
+            for (int i = 0; i < torneiNonIscritti.size(); i++) {
+                Torneo t = torneiNonIscritti.get(i);
+                tournamentOptions[i] = t.getCodice() + " - " + t.getNome() + " (" + t.getData().toString() + ")";
+            }
+
+            String selectedTournament = (String) JOptionPane.showInputDialog(
+                    this,
+                    "Seleziona il torneo a cui iscriverti:",
+                    "Iscrizione Torneo",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    tournamentOptions,
+                    tournamentOptions[0]
+            );
+            if (selectedTournament == null) {
+                return; // L'utente ha annullato
+            }
+
+            // Estrai il codice del torneo
+            String[] parts = selectedTournament.split(" - ");
+            int tournamentCode = Integer.parseInt(parts[0].trim());
+
+            // 2. Seleziona il torneo
+            cardClash.selezionaTorneo(tournamentCode);
+            Torneo torneoSelezionato = cardClash.getTorneoCorrente();
+            JOptionPane.showMessageDialog(this, "Torneo selezionato: " + torneoSelezionato.getNome()
+                    + "\nData: " + torneoSelezionato.getData(), "Informazione", JOptionPane.INFORMATION_MESSAGE);
+
+            // 3. Richiedi il nome del mazzo
+            String mazzoNome = JOptionPane.showInputDialog(this, "Inserisci il nome del mazzo:");
+            if (mazzoNome == null || mazzoNome.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Il nome del mazzo è obbligatorio!", "Errore",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            cardClash.inserimentoMazzo(mazzoNome);
+
+            // 4. Seleziona la tipologia del mazzo tra quelle disponibili
+            Map<Integer, TipoMazzo> tipiMazzi = cardClash.getTipiMazziConsentiti();
+            if (tipiMazzi == null || tipiMazzi.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Non sono disponibili tipi di mazzo per questo torneo!",
+                        "Errore", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            String[] tipologiaOptions = new String[tipiMazzi.size()];
+            int index = 0;
+            for (Integer codice : tipiMazzi.keySet()) {
+                String nomeTipologia = tipiMazzi.get(codice).getNome();
+                tipologiaOptions[index++] = codice + " - " + nomeTipologia;
+            }
+            String selectedTipologia = (String) JOptionPane.showInputDialog(
+                    this,
+                    "Seleziona il tipo di mazzo:",
+                    "Selezione Tipologia",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    tipologiaOptions,
+                    tipologiaOptions[0]
+            );
+            if (selectedTipologia == null) {
+                JOptionPane.showMessageDialog(this, "Selezione del tipo di mazzo annullata!", "Errore", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            String[] partsTip = selectedTipologia.split(" - ");
+            int tipologiaCodice = Integer.parseInt(partsTip[0].trim());
+            cardClash.selezionaTipo(tipologiaCodice);
+
+            // 5. Conferma l'iscrizione
+            int conferma = JOptionPane.showConfirmDialog(this, "Confermi l'iscrizione al torneo?",
+                    "Conferma Iscrizione", JOptionPane.YES_NO_OPTION);
+            if (conferma == JOptionPane.YES_OPTION) {
+                cardClash.confermaIscrizione();
+                JOptionPane.showMessageDialog(this, "Iscrizione al torneo completata con successo!",
+                        "Successo", JOptionPane.INFORMATION_MESSAGE);
+                System.out.println("Elenco giocatori: " + torneoSelezionato.getGiocatori().toString());
+            } else {
+                JOptionPane.showMessageDialog(this, "Iscrizione annullata.", "Informazione",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
     }
 
     private class OrganizerPanel extends JPanel {
+
         public OrganizerPanel() {
             setLayout(new GridLayout(4, 2, 10, 10));
 
@@ -242,6 +360,7 @@ public class CardClashGUI extends JFrame {
     }
 
     private class TesseramentoPanel extends JPanel {
+
         private JTextField nomeField;
         private JTextField emailField;
         private JPasswordField passwordField;
@@ -327,10 +446,9 @@ public class CardClashGUI extends JFrame {
         }
     }
 
-    // ======================= Pannello per la Creazione del Torneo
-    // =======================
-
+    // ======================= Pannello per la Creazione del Torneo =======================
     private class TournamentCreationPanel extends JPanel {
+
         private JTextField nomeField;
         private JTextField dataField;
         private JTextField orarioField;
@@ -436,9 +554,8 @@ public class CardClashGUI extends JFrame {
             try {
                 cardClash.creaTorneo(nome, data, orarioStr, luogo);
                 if (cardClash.getTorneoCorrente() == null) {
-                    JOptionPane.showMessageDialog(this, "Errore durante la creazione del torneo",
-                            "Errore",
-                            JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Esiste già un torneo con la data selezionata.",
+                            "Errore", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             } catch (DataGiaPresenteException dpe) {
@@ -491,5 +608,4 @@ public class CardClashGUI extends JFrame {
             cardLayout.show(containerPanel, "MAIN");
         }
     }
-
 }

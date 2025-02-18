@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<tornei>
+    <torneo>
+        <nome>ciao</nome>
+        <data>2025-05-09</data>
+        <orario>10:00</orario>
+        <luogo>sgrodol</luogo>
+        <codFormato>1</codFormato>
+    </torneo>
+    <torneo>
+        <nome>ciao</nome>
+        <data>2025-05-01</data>
+        <orario>18:00</orario>
+        <luogo>puzzo</luogo>
+        <codFormato>3</codFormato>
+    </torneo>
+</tornei>

@@ -48,14 +48,17 @@ public class CardClash {
     }
 
     public void creaTorneo(String nome, LocalDate data, String orario, String luogo) throws DataGiaPresenteException {
+        // Estensione 1.B implementata
         try {
             for (Torneo t : tornei.values()) {
                 if (t.getData().equals(data)) {
+                    torneoCorrente = null;
                     throw new DataGiaPresenteException();
                 }
             }
         } catch (DataGiaPresenteException e) {
             System.err.println(e.getMessage());
+            return;
         }
         LocalTime o = LocalTime.parse(orario);
         this.torneoCorrente = new Torneo(nome, data, o, luogo);

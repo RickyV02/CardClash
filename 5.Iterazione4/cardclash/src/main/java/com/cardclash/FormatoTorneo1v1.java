@@ -16,16 +16,15 @@ public class FormatoTorneo1v1 extends FormatoTorneo {
 
         switch (getGioco()) {
             case YUGIOH:
-                tipi.add(new TipoMazzo("Main deck"));
-                tipi.add(new TipoMazzo("Extra deck"));
-                tipi.add(new TipoMazzo("Side deck"));
+                tipi.add(new TipoMazzo("Synchro deck"));
+                tipi.add(new TipoMazzo("Xyz deck"));
                 break;
             case POKEMON:
                 tipi.add(new TipoMazzo("Mazzo Standard"));
                 break;
             case MAGIC:
                 tipi.add(new TipoMazzo("Library"));
-                tipi.add(new TipoMazzo("Sideboard"));
+                tipi.add(new TipoMazzo("Aggro"));
                 break;
             default:
                 System.out.println("Formato 1v1 non supportato per " + getGioco());
