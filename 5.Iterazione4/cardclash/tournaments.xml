@@ -20,4 +20,11 @@
         <luogo>assa</luogo>
         <codFormato>2</codFormato>
     </torneo>
-<torneo><nome>franco</nome><data>2025-06-25</data><orario>13:00</orario><luogo>puzzo</luogo><codFormato>10</codFormato></torneo></tornei>
+    <torneo>
+        <nome>franco</nome>
+        <data>2025-06-25</data>
+        <orario>13:00</orario>
+        <luogo>puzzo</luogo>
+        <codFormato>10</codFormato>
+    </torneo>
+<torneo><nome>ciao</nome><data>2025-06-26</data><orario>13:00</orario><luogo>puzzo2</luogo><codFormato>1</codFormato></torneo></tornei>
