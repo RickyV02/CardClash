@@ -42,7 +42,7 @@ public class CardClashTest {
     public void testLoadFormati() {
         Map<Integer, FormatoTorneo> formati = cardClash.getFormati();
         assertNotNull(formati);
-        assertEquals(3, formati.size());
+        assertEquals(4, formati.size());
     }
 
     @Test

@@ -3,6 +3,7 @@ com\cardclash\GiocatoriNotPotenzaDiDueException.class
 com\cardclash\FormatoTorneo1v1.class
 com\cardclash\FormatoTorneoPauper.class
 com\cardclash\Giocatore.class
+com\cardclash\CardClashGUI$OrganizerPanel$1.class
 com\cardclash\CardClashGUI$OrganizerPanel.class
 com\cardclash\TipoMazzoEsistenteException.class
 com\cardclash\Tabellone.class
@@ -16,6 +17,7 @@ com\cardclash\Mazzo.class
 com\cardclash\Torneo.class
 com\cardclash\CardClashGUI$LoginPanel.class
 com\cardclash\CardClashGUI.class
+com\cardclash\CardClashGUI$OrganizerPanel$2.class
 com\cardclash\GiocatoreGiaRegistratoException.class
 com\cardclash\DataGiaPresenteException.class
 com\cardclash\CardClashGUI$MainPanel.class

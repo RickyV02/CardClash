@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<tornei>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><tornei>
     <torneo>
         <nome>ciao</nome>
         <data>2025-05-09</data>
@@ -21,4 +20,4 @@
         <luogo>assa</luogo>
         <codFormato>2</codFormato>
     </torneo>
-</tornei>
+<torneo><nome>franco</nome><data>2025-06-25</data><orario>13:00</orario><luogo>puzzo</luogo><codFormato>10</codFormato></torneo></tornei>

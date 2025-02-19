@@ -82,7 +82,7 @@ public class Torneo {
         LocalDate oggi = LocalDate.now();
         LocalTime adesso = LocalTime.now();
         return (data.isAfter(oggi) || (data.isEqual(oggi) && orario.isAfter(adesso)))
-                && numGiocatori < this.formato.getNumMaxGiocatori();
+                && numGiocatori < this.formato.getNumMaxGiocatori() && getTabellone() == null;
     }
 
     public boolean isPotenzaDiDue(int n) {
