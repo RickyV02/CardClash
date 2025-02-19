@@ -4,7 +4,6 @@ import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -115,12 +114,12 @@ public class PersistenceHandler {
 
                 Integer codice = Integer.parseInt(formatoElem.getAttribute("codice"));
                 String nome = formatoElem.getAttribute("nome");
-                String gioco = formatoElem.getAttribute("gioco");
+                String giocoString = formatoElem.getAttribute("gioco");
                 Integer numMaxGiocatori = Integer.parseInt(formatoElem.getAttribute("numMaxGiocatori"));
                 Float victoryScore = Float.parseFloat(formatoElem.getAttribute("victoryScore"));
                 Float penaltyScore = Float.parseFloat(formatoElem.getAttribute("penaltyScore"));
 
-                cardClash.creaNuovoFormato(codice, nome, gioco, numMaxGiocatori, victoryScore, penaltyScore);
+                cardClash.creaNuovoFormato(codice, nome, giocoString, numMaxGiocatori, victoryScore, penaltyScore);
                 cardClash.confermaFormato();
             }
 
@@ -153,7 +152,7 @@ public class PersistenceHandler {
                     doc,
                     formato.getCodice(),
                     formato.getNome(),
-                    formato.getGioco().toString(),
+                    formato.getGioco(),
                     formato.getNumMaxGiocatori(),
                     formato.getVictoryScore(),
                     formato.getPenaltyScore()
@@ -176,12 +175,12 @@ public class PersistenceHandler {
     }
 
     // Metodo per creare un elemento XML per un formato
-    private static Element createFormat(Document doc, int codice, String nome, String gioco, int numMaxGiocatori, float victoryScore, float penaltyScore) {
+    private static Element createFormat(Document doc, int codice, String nome, Gioco gioco, int numMaxGiocatori, float victoryScore, float penaltyScore) {
         Element formatoElem = doc.createElement("formato");
 
         formatoElem.setAttribute("codice", String.valueOf(codice));
         formatoElem.setAttribute("nome", nome);
-        formatoElem.setAttribute("gioco", gioco);
+        formatoElem.setAttribute("gioco", gioco.toString());
         formatoElem.setAttribute("numMaxGiocatori", String.valueOf(numMaxGiocatori));
         formatoElem.setAttribute("victoryScore", String.valueOf(victoryScore));
         formatoElem.setAttribute("penaltyScore", String.valueOf(penaltyScore));

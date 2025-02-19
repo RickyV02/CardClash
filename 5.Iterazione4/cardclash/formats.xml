@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <formati>
-    <formato codice="7" gioco="Magic: The Gathering" nome="MAGIC" numMaxGiocatori="16"
+    <formato codice="7" gioco="MAGIC" nome="formatoProva" numMaxGiocatori="16"
         penaltyScore="5.0" victoryScore="4.0" />
 </formati>
