@@ -7,7 +7,8 @@ import java.util.*;
 import javax.swing.*;
 
 public class OrganizerPanel extends JPanel {
-    private CardClashGUI parentFrame;
+
+    private final CardClashGUI parentFrame;
 
     public OrganizerPanel(CardClashGUI parentFrame) {
         this.parentFrame = parentFrame;
@@ -79,9 +80,11 @@ public class OrganizerPanel extends JPanel {
             return;
         }
         List<Torneo> torneiFuturi = new ArrayList<>();
-        for (Torneo t : tuttiTornei.values())
-            if (!t.getData().isBefore(LocalDate.now()))
+        for (Torneo t : tuttiTornei.values()) {
+            if (!t.getData().isBefore(LocalDate.now())) {
                 torneiFuturi.add(t);
+            }
+        }
         if (torneiFuturi.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Non ci sono tornei futuri disponibili!", "Informazione", JOptionPane.INFORMATION_MESSAGE);
             return;
@@ -120,8 +123,9 @@ public class OrganizerPanel extends JPanel {
         }
         String[] torneoOptions = new String[tuttiTornei.size()];
         int idx = 0;
-        for (Torneo t : tuttiTornei.values())
+        for (Torneo t : tuttiTornei.values()) {
             torneoOptions[idx++] = t.getCodice() + " - " + t.getNome() + " (" + t.getData() + ")";
+        }
         String selectedTorneo = (String) JOptionPane.showInputDialog(this, "Seleziona il torneo in cui eliminare giocatori:", "Elimina giocatori", JOptionPane.PLAIN_MESSAGE, null, torneoOptions, torneoOptions[0]);
         if (selectedTorneo == null) {
             JOptionPane.showMessageDialog(this, "Operazione annullata.", "Informazione", JOptionPane.INFORMATION_MESSAGE);
@@ -135,8 +139,9 @@ public class OrganizerPanel extends JPanel {
         }
         List<Giocatore> listaGiocatori = parentFrame.cardClash.getTorneoCorrente().getTabelloneCorrente().getGiocatori();
         Map<String, Giocatore> giocatoriIniziali = new HashMap<>();
-        for (Giocatore g : listaGiocatori)
+        for (Giocatore g : listaGiocatori) {
             giocatoriIniziali.put(g.getEmail(), g);
+        }
         int finalSize = parentFrame.cardClash.getTorneoCorrente().getTabelloneCorrente().getGiocatori().size();
         if (finalSize == 1) {
             JOptionPane.showMessageDialog(this, "Il torneo è già concluso! Impossibile eliminare altri giocatori.", "Errore!", JOptionPane.INFORMATION_MESSAGE);
@@ -145,8 +150,9 @@ public class OrganizerPanel extends JPanel {
         mostraTabellone(tabellone, "Tabellone Iniziale", torneoCode);
         while (finalSize != 1) {
             int choice = JOptionPane.showConfirmDialog(this, "Vuoi rimuovere un giocatore?", "Elimina giocatore", JOptionPane.YES_NO_OPTION);
-            if (choice != JOptionPane.YES_OPTION)
+            if (choice != JOptionPane.YES_OPTION) {
                 break;
+            }
             String emailToRemove = JOptionPane.showInputDialog(this, "Inserisci l'email del giocatore da eliminare:");
             if (emailToRemove == null || emailToRemove.trim().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Nessuna email inserita, annullo l'operazione per questo giocatore.", "Errore", JOptionPane.ERROR_MESSAGE);
@@ -154,7 +160,7 @@ public class OrganizerPanel extends JPanel {
             }
             boolean giocatorePresente = tabellone.getPartite().values().stream()
                     .anyMatch(partita -> (partita.getGiocatore1() != null && partita.getGiocatore1().getEmail().equals(emailToRemove))
-                            || (partita.getGiocatore2() != null && partita.getGiocatore2().getEmail().equals(emailToRemove)));
+                    || (partita.getGiocatore2() != null && partita.getGiocatore2().getEmail().equals(emailToRemove)));
             if (!giocatorePresente) {
                 JOptionPane.showMessageDialog(this, "Il giocatore con l'email inserita non è presente nel tabellone.", "Errore", JOptionPane.ERROR_MESSAGE);
                 continue;
@@ -193,8 +199,9 @@ public class OrganizerPanel extends JPanel {
         }
         String[] torneoOptions = new String[tuttiTornei.size()];
         int idx = 0;
-        for (Torneo t : tuttiTornei.values())
+        for (Torneo t : tuttiTornei.values()) {
             torneoOptions[idx++] = t.getCodice() + " - " + t.getNome() + " (" + t.getData() + ")";
+        }
         String selectedTorneo = (String) JOptionPane.showInputDialog(this, "Seleziona il torneo per visualizzare la classifica:", "Visualizza Classifica", JOptionPane.PLAIN_MESSAGE, null, torneoOptions, torneoOptions[0]);
         if (selectedTorneo == null) {
             JOptionPane.showMessageDialog(this, "Operazione annullata.", "Informazione", JOptionPane.INFORMATION_MESSAGE);
@@ -214,8 +221,9 @@ public class OrganizerPanel extends JPanel {
             data[i][2] = g.getNickname();
             data[i][3] = g.getPunteggio(torneoCode);
         }
-        String[] columnNames = { "Posizione", "Email", "Nickname", "Punteggio" };
+        String[] columnNames = {"Posizione", "Email", "Nickname", "Punteggio"};
         JTable table = new JTable(data, columnNames) {
+            @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
@@ -233,8 +241,9 @@ public class OrganizerPanel extends JPanel {
         }
         String[] torneoOptions = new String[torneiDaConcludere.size()];
         int idx = 0;
-        for (Torneo torneo : torneiDaConcludere.values())
+        for (Torneo torneo : torneiDaConcludere.values()) {
             torneoOptions[idx++] = torneo.getCodice() + " - " + torneo.getNome() + " (" + torneo.getData() + ")";
+        }
         String selectedTorneo = (String) JOptionPane.showInputDialog(this, "Seleziona il torneo da concludere:", "Aggiorna ELO", JOptionPane.PLAIN_MESSAGE, null, torneoOptions, torneoOptions[0]);
         if (selectedTorneo == null) {
             JOptionPane.showMessageDialog(this, "Operazione annullata.", "Informazione", JOptionPane.INFORMATION_MESSAGE);
@@ -254,7 +263,7 @@ public class OrganizerPanel extends JPanel {
         }
         Integer codice;
         try {
-            codice = Integer.parseInt(codiceStr.trim());
+            codice = Integer.valueOf(codiceStr.trim());
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Codice univoco non valido!", "Errore", JOptionPane.ERROR_MESSAGE);
             return;
@@ -280,7 +289,7 @@ public class OrganizerPanel extends JPanel {
         String victoryScoreStr = JOptionPane.showInputDialog(this, "Inserisci il punteggio di vittoria:");
         Float victoryScore;
         try {
-            victoryScore = Float.parseFloat(victoryScoreStr.trim());
+            victoryScore = Float.valueOf(victoryScoreStr.trim());
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Punteggio di vittoria non valido!", "Errore", JOptionPane.ERROR_MESSAGE);
             return;
@@ -288,7 +297,7 @@ public class OrganizerPanel extends JPanel {
         String penaltyScoreStr = JOptionPane.showInputDialog(this, "Inserisci il punteggio di penalità:");
         Float penaltyScore;
         try {
-            penaltyScore = Float.parseFloat(penaltyScoreStr.trim());
+            penaltyScore = Float.valueOf(penaltyScoreStr.trim());
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Punteggio di penalità non valido!", "Errore", JOptionPane.ERROR_MESSAGE);
             return;
@@ -304,15 +313,16 @@ public class OrganizerPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Il gioco specificato non è supportato!", "Errore", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        String info = "Codice: " + nuovoFormato.getCodice() + "\n" +
-                      "Nome: " + nuovoFormato.getNome() + "\n" +
-                      "Gioco: " + nuovoFormato.getGioco() + "\n" +
-                      "Numero massimo di partecipanti: " + nuovoFormato.getNumMaxGiocatori() + "\n" +
-                      "Punteggio di vittoria: " + nuovoFormato.getVictoryScore() + "\n" +
-                      "Punteggio di penalità: " + nuovoFormato.getPenaltyScore() + "\n";
+        String info = "Codice: " + nuovoFormato.getCodice() + "\n"
+                + "Nome: " + nuovoFormato.getNome() + "\n"
+                + "Gioco: " + nuovoFormato.getGioco() + "\n"
+                + "Numero massimo di partecipanti: " + nuovoFormato.getNumMaxGiocatori() + "\n"
+                + "Punteggio di vittoria: " + nuovoFormato.getVictoryScore() + "\n"
+                + "Punteggio di penalità: " + nuovoFormato.getPenaltyScore() + "\n";
         int conferma = JOptionPane.showConfirmDialog(this, info + "\nConfermi l'inserimento del nuovo formato?", "Conferma Nuovo Formato", JOptionPane.YES_NO_OPTION);
         if (conferma == JOptionPane.YES_OPTION) {
             parentFrame.cardClash.confermaFormato();
+            PersistenceHandler.saveFormat(nuovoFormato);
             JOptionPane.showMessageDialog(this, "Nuovo formato aggiunto con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "Operazione annullata.", "Informazione", JOptionPane.INFORMATION_MESSAGE);
@@ -320,7 +330,7 @@ public class OrganizerPanel extends JPanel {
     }
 
     private void mostraTabellone(Tabellone tabellone, String title, Integer codTorneo) {
-        String[] columnNames = { "codPartita", "Giocatore1", "Punti G1", "Giocatore2", "Punti G2" };
+        String[] columnNames = {"codPartita", "Giocatore1", "Punti G1", "Giocatore2", "Punti G2"};
         Object[][] data = new Object[tabellone.getPartite().size()][5];
         int row = 0;
         for (Map.Entry<Integer, Partita> entry : tabellone.getPartite().entrySet()) {
@@ -335,7 +345,9 @@ public class OrganizerPanel extends JPanel {
             row++;
         }
         JTable table = new JTable(data, columnNames) {
-            public boolean isCellEditable(int row, int column) { return false; }
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
         };
         Integer tabCode = tabellone.getCodice();
         String codiceTabellone = (tabCode != null) ? tabCode.toString() : "non confermato";

@@ -6,8 +6,10 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import javax.smartcardio.Card;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -21,6 +23,7 @@ public class PersistenceHandler {
 
     private static final String USER_FILE = "users.xml";
     private static final String TOURNAMENTS_FILE = "tournaments.xml";
+    private static final String FORMATS_FILE = "formats.xml";
 
     // Carica gli utenti dal file XML
     public static void loadUsers(CardClash cardClash) {
@@ -95,6 +98,98 @@ public class PersistenceHandler {
         }
     }
 
+    public static void loadFormats(CardClash cardClash) {
+        try {
+            File file = new File(FORMATS_FILE);
+            if (!file.exists()) {
+                System.out.println("File formats.xml non trovato, nessun formato verrà caricato.");
+                return;
+            }
+
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(file);
+
+            NodeList formatoNodes = doc.getElementsByTagName("formato");
+            for (int i = 0; i < formatoNodes.getLength(); i++) {
+                Element formatoElem = (Element) formatoNodes.item(i);
+
+                Integer codice = Integer.parseInt(formatoElem.getAttribute("codice"));
+                String nome = formatoElem.getAttribute("nome");
+                String gioco = formatoElem.getAttribute("gioco");
+                Integer numMaxGiocatori = Integer.parseInt(formatoElem.getAttribute("numMaxGiocatori"));
+                Float victoryScore = Float.parseFloat(formatoElem.getAttribute("victoryScore"));
+                Float penaltyScore = Float.parseFloat(formatoElem.getAttribute("penaltyScore"));
+
+                cardClash.creaNuovoFormato(codice, nome, gioco, numMaxGiocatori, victoryScore, penaltyScore);
+                cardClash.confermaFormato();
+            }
+
+            System.out.println("Formati caricati correttamente da " + FORMATS_FILE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveFormat(FormatoTorneo formato) {
+        try {
+            File file = new File(FORMATS_FILE);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc;
+            Element root;
+
+            // Se il file non esiste, creiamo un nuovo documento
+            if (!file.exists()) {
+                doc = builder.newDocument();
+                root = doc.createElement("formati");
+                doc.appendChild(root);
+            } else {
+                doc = builder.parse(file);
+                root = doc.getDocumentElement();
+            }
+
+            // Crea l'elemento formato e lo aggiunge al file
+            Element formatoElem = createFormat(
+                    doc,
+                    formato.getCodice(),
+                    formato.getNome(),
+                    formato.getGioco().toString(),
+                    formato.getNumMaxGiocatori(),
+                    formato.getVictoryScore(),
+                    formato.getPenaltyScore()
+            );
+            root.appendChild(formatoElem);
+
+            // Scrive il documento aggiornato nel file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(file);
+
+            transformer.transform(source, result);
+
+            System.out.println("Formato salvato correttamente in " + FORMATS_FILE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Metodo per creare un elemento XML per un formato
+    private static Element createFormat(Document doc, int codice, String nome, String gioco, int numMaxGiocatori, float victoryScore, float penaltyScore) {
+        Element formatoElem = doc.createElement("formato");
+
+        formatoElem.setAttribute("codice", String.valueOf(codice));
+        formatoElem.setAttribute("nome", nome);
+        formatoElem.setAttribute("gioco", gioco);
+        formatoElem.setAttribute("numMaxGiocatori", String.valueOf(numMaxGiocatori));
+        formatoElem.setAttribute("victoryScore", String.valueOf(victoryScore));
+        formatoElem.setAttribute("penaltyScore", String.valueOf(penaltyScore));
+
+        return formatoElem;
+    }
+
     // Crea utenti di default e salva il file XML
     public static void createDefaultUsers() {
         try {
@@ -157,7 +252,7 @@ public class PersistenceHandler {
     }
 
     // Autentica l'utente confrontando l'email e la password (hashed)
-    public String authenticate(String email, String password) {
+    public static String authenticate(String email, String password) {
         try {
             File file = new File(USER_FILE);
             if (!file.exists()) {

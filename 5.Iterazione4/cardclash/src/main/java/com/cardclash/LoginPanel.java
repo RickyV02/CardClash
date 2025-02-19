@@ -30,7 +30,7 @@ public class LoginPanel extends JPanel {
         loginButton.addActionListener(e -> {
             String email = emailField.getText();
             String password = new String(passwordField.getPassword());
-            String role = parentFrame.persistenceHandler.authenticate(email, password);
+            String role = PersistenceHandler.authenticate(email, password);
             if (role != null) {
                 Giocatore giocatore = parentFrame.cardClash.getGiocatore(email);
                 if (giocatore != null) {

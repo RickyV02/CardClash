@@ -39,7 +39,7 @@ public class TesseramentoPanel extends JPanel {
             try {
                 parentFrame.cardClash.registraGiocatore(nome, email, password, nickname);
                 parentFrame.cardClash.confermaRegistrazione();
-                parentFrame.persistenceHandler.registerUser("user", nome, email, password, nickname);
+                PersistenceHandler.registerUser("user", nome, email, password, nickname);
                 JOptionPane.showMessageDialog(this, "Registrazione completata!", "Successo", JOptionPane.INFORMATION_MESSAGE);
                 parentFrame.cardLayout.show(parentFrame.containerPanel, "LOGIN");
             } catch (GiocatoreGiaRegistratoException ex) {
