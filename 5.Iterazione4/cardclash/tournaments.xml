@@ -14,4 +14,11 @@
         <luogo>puzzo</luogo>
         <codFormato>3</codFormato>
     </torneo>
+    <torneo>
+        <nome>svfasf</nome>
+        <data>2026-07-09</data>
+        <orario>10:00</orario>
+        <luogo>assa</luogo>
+        <codFormato>2</codFormato>
+    </torneo>
 </tornei>

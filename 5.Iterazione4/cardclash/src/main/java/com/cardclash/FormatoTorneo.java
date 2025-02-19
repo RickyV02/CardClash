@@ -30,9 +30,13 @@ public abstract class FormatoTorneo {
     // Metodo astratto che deve essere implementato dalle sottoclassi
     protected abstract void loadTipiMazzo();
 
-    public void inserisciTipoMazzo(String nome) {
-        TipoMazzo tm = new TipoMazzo(nome);
-        this.setTipoMazzoCorrente(tm);
+    public void inserisciTipoMazzo(String nome) throws TipoMazzoEsistenteException {
+        if (tipiMazzo.values().stream().anyMatch(tm -> tm.getNome().equals(nome))) {
+            throw new TipoMazzoEsistenteException(nome);
+        } else {
+            TipoMazzo tm = new TipoMazzo(nome);
+            this.setTipoMazzoCorrente(tm);
+        }
     }
 
     public void confermaInserimento() {

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<users>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><users>
     <user role="admin">
         <nome>admin</nome>
         <email>admin@gmail.com</email>
@@ -14,4 +13,4 @@
         <nickname>ricky</nickname>
         <elo>0.0</elo>
     </user>
-</users>
+<user role="user"><nome>fSFSAF</nome><email>ciao@gmail.com</email><password>3838bd5806d32cd91144865aa822b9551417dd2796c163d390baa7074d3067a7</password><nickname>ASFASF</nickname><elo>0.0</elo></user><user role="user"><nome>safsa</nome><email>ciao1@gmail.com</email><password>3838bd5806d32cd91144865aa822b9551417dd2796c163d390baa7074d3067a7</password><nickname>asfasf</nickname><elo>0.0</elo></user><user role="user"><nome>safsa</nome><email>ciao2@gmail.com</email><password>3838bd5806d32cd91144865aa822b9551417dd2796c163d390baa7074d3067a7</password><nickname>asfasf</nickname><elo>0.0</elo></user></users>

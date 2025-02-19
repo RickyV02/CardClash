@@ -18,7 +18,7 @@ public class Torneo {
     private final LocalTime orario;
     private final String luogo;
     private boolean terminato;
-    private final Map<String, Giocatore> giocatori;
+    private Map<String, Giocatore> giocatori;
     private final Map<Integer, Mazzo> mazziTorneo;
     private Giocatore vincitore;
     private FormatoTorneo formato;
@@ -74,6 +74,10 @@ public class Torneo {
         return tabellone;
     }
 
+    public Tabellone getTabelloneCorrente() {
+        return tabelloneCorrente;
+    }
+
     public boolean isAperto() {
         LocalDate oggi = LocalDate.now();
         LocalTime adesso = LocalTime.now();
@@ -117,8 +121,13 @@ public class Torneo {
         tabelloneCorrente.eliminaGiocatore(email);
     }
 
-    public void aggiornaTabellone() {
-        tabelloneCorrente.aggiornaTabellone();
+    public void aggiornaTabellone() throws GiocatoriNotPotenzaDiDueException {
+        boolean checkPotenza = isPotenzaDiDue(tabelloneCorrente.getGiocatori().size());
+        if (checkPotenza) {
+            tabelloneCorrente.aggiornaTabellone();
+        } else {
+            throw new GiocatoriNotPotenzaDiDueException(tabelloneCorrente.getGiocatori().size());
+        }
     }
 
     public void aggiornaPunteggi(Float punteggio) {
@@ -206,6 +215,10 @@ public class Torneo {
 
     public String getLuogo() {
         return luogo;
+    }
+
+    public void setGiocatori(Map<String, Giocatore> giocatori) {
+        this.giocatori = giocatori;
     }
 
     @Override

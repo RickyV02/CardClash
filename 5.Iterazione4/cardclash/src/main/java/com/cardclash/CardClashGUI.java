@@ -8,6 +8,8 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +22,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
@@ -118,6 +122,7 @@ public class CardClashGUI extends JFrame {
                 if (role != null) {
                     Giocatore giocatore = cardClash.getGiocatore(email);
                     if (giocatore != null) {
+                        cardClash.setGiocatoreCorrente(giocatore);
                         mainPanel.updateEloLabel(giocatore.getELO());
                         parentFrame.showMainPanel(role);
                     } else {
@@ -242,7 +247,7 @@ public class CardClashGUI extends JFrame {
             // Rimuovi i tornei ai quali il giocatore è già iscritto
             List<Torneo> torneiNonIscritti = new java.util.ArrayList<>();
             for (Torneo t : torneiDisponibili) {
-                // Supponiamo che il metodo getGiocatori() restituisca una mappa (o lista) con le email dei partecipanti
+                // Supponiamo che getGiocatori() restituisca una mappa con le email dei partecipanti
                 if (!t.getGiocatori().containsKey(giocatore.getEmail())) {
                     torneiNonIscritti.add(t);
                 }
@@ -316,7 +321,8 @@ public class CardClashGUI extends JFrame {
                     tipologiaOptions[0]
             );
             if (selectedTipologia == null) {
-                JOptionPane.showMessageDialog(this, "Selezione del tipo di mazzo annullata!", "Errore", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Selezione del tipo di mazzo annullata!", "Errore",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
             String[] partsTip = selectedTipologia.split(" - ");
@@ -350,12 +356,312 @@ public class CardClashGUI extends JFrame {
             });
             add(creaTorneoButton);
 
-            add(new JButton("Inserimento Tipo Mazzo"));
-            add(new JButton("Genera Tabellone"));
-            add(new JButton("Elimina giocatori"));
+            // Bottone per UC4: Inserimento Tipo Mazzo
+            JButton inserimentoTipoButton = new JButton("Inserimento Tipo Mazzo");
+            inserimentoTipoButton.addActionListener(e -> inserimentoTipoMazzo());
+            add(inserimentoTipoButton);
+
+            // UC5: Genera Tabellone
+            JButton generaTabelloneButton = new JButton("Genera Tabellone");
+            generaTabelloneButton.addActionListener(e -> generaTabellone());
+            add(generaTabelloneButton);
+
+            // UC6: Elimina giocatori
+            JButton eliminaGiocatoriButton = new JButton("Elimina giocatori");
+            eliminaGiocatoriButton.addActionListener(e -> eliminaGiocatori());
+            add(eliminaGiocatoriButton);
+
             add(new JButton("Visualizza Classifica"));
             add(new JButton("Aggiorna ELO"));
             add(new JButton("Aggiungi formato torneo"));
+        }
+
+        /**
+         * UC4: Inserimento tipologia mazzo
+         */
+        private void inserimentoTipoMazzo() {
+            // 1. Ottieni i formati disponibili
+            Map<Integer, FormatoTorneo> formati = cardClash.getFormati();
+            if (formati == null || formati.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Non ci sono formati disponibili!",
+                        "Errore", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Crea un array di opzioni (codice - nome formato (gioco))
+            String[] formatoOptions = new String[formati.size()];
+            int index = 0;
+            for (Map.Entry<Integer, FormatoTorneo> entry : formati.entrySet()) {
+                FormatoTorneo formato = entry.getValue();
+                // Aggiungiamo anche il gioco tra parentesi
+                formatoOptions[index++] = entry.getKey() + " - "
+                        + formato.getNome() + " (" + formato.getGioco() + ")";
+            }
+
+            // Popup per selezionare il formato
+            String selectedFormato = (String) JOptionPane.showInputDialog(
+                    this,
+                    "Seleziona il formato in cui inserire la nuova tipologia di mazzo:",
+                    "Inserimento Tipo Mazzo",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    formatoOptions,
+                    formatoOptions[0]
+            );
+            if (selectedFormato == null) {
+                JOptionPane.showMessageDialog(this, "Operazione annullata.", "Informazione", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            // Estrai il codice dal risultato (prima parte, prima del ' - ')
+            int formatoCodice = Integer.parseInt(selectedFormato.split(" - ")[0].trim());
+
+            // 2. Seleziona il formato
+            cardClash.selezioneFormato(formatoCodice);
+
+            // 3. Inserisci il nome della nuova tipologia di mazzo
+            String nomeTipologia = JOptionPane.showInputDialog(this, "Inserisci il nome della nuova tipologia di mazzo:");
+            if (nomeTipologia == null || nomeTipologia.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Nome tipologia mancante.", "Errore", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 4. Validazione e salvataggio
+            try {
+                cardClash.inserimentoTipoMazzo(nomeTipologia);
+                if (cardClash.getFormatoCorrente() == null) {
+                    JOptionPane.showMessageDialog(this, "Tipologia già esistente",
+                            "Errore", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                cardClash.confermaInserimentoTipo();
+                JOptionPane.showMessageDialog(this, "Nuova tipologia di mazzo inserita con successo!",
+                        "Successo", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                // Estensione 4a: dati incompleti o non validi
+                JOptionPane.showMessageDialog(this, "Errore nell'inserimento della tipologia: " + ex.getMessage(),
+                        "Errore", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        private void generaTabellone() {
+            // 1. Ottieni tutti i tornei
+            Map<Integer, Torneo> tuttiTornei = cardClash.getTornei();
+            if (tuttiTornei == null || tuttiTornei.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Non ci sono tornei disponibili!", "Informazione", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            // 2. Filtra i tornei con data da oggi in poi
+            List<Torneo> torneiFuturi = new ArrayList<>();
+            for (Torneo t : tuttiTornei.values()) {
+                if (!t.getData().isBefore(LocalDate.now())) {
+                    torneiFuturi.add(t);
+                }
+            }
+            if (torneiFuturi.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Non ci sono tornei futuri disponibili!", "Informazione", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            // 3. Mostra i tornei filtrati in un popup a tendina
+            String[] torneoOptions = new String[torneiFuturi.size()];
+            for (int i = 0; i < torneiFuturi.size(); i++) {
+                Torneo tor = torneiFuturi.get(i);
+                torneoOptions[i] = tor.getCodice() + " - " + tor.getNome() + " (" + tor.getData() + ")";
+            }
+
+            String selectedTorneo = (String) JOptionPane.showInputDialog(
+                    this, "Seleziona il torneo per generare il tabellone:", "Genera Tabellone",
+                    JOptionPane.PLAIN_MESSAGE, null, torneoOptions, torneoOptions[0]
+            );
+
+            if (selectedTorneo == null) {
+                JOptionPane.showMessageDialog(this, "Operazione annullata.", "Informazione", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            // Estrai il codice del torneo
+            String[] parts = selectedTorneo.split(" - ");
+            int torneoCode = Integer.parseInt(parts[0].trim());
+
+            // 4. Genera il tabellone
+            Tabellone tabellone = cardClash.creaTabellone(torneoCode);
+            if (tabellone == null) {
+                JOptionPane.showMessageDialog(this, "Impossibile generare il tabellone per il torneo selezionato. "
+                        + "Verifica che il numero di giocatori sia corretto.", "Errore", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 5. Mostra il tabellone con il metodo riutilizzabile
+            mostraTabellone(tabellone, "Tabellone Generato", torneoCode);
+
+            // 6. Conferma il tabellone
+            int conferma = JOptionPane.showConfirmDialog(
+                    this, "Confermi il tabellone?", "Conferma Tabellone", JOptionPane.YES_NO_OPTION
+            );
+            if (conferma == JOptionPane.YES_OPTION) {
+                cardClash.confermaTabellone();
+                JOptionPane.showMessageDialog(this, "Tabellone confermato con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Tabellone non confermato.", "Informazione", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+
+        private void eliminaGiocatori() {
+            // 1. Seleziona un torneo
+            Map<Integer, Torneo> tuttiTornei = cardClash.getTornei();
+            if (tuttiTornei == null || tuttiTornei.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Non ci sono tornei disponibili!",
+                        "Informazione",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            // Crea un array di opzioni (codice - nome - data)
+            String[] torneoOptions = new String[tuttiTornei.size()];
+            int idx = 0;
+            for (Torneo t : tuttiTornei.values()) {
+                torneoOptions[idx++] = t.getCodice() + " - " + t.getNome() + " (" + t.getData() + ")";
+            }
+
+            String selectedTorneo = (String) JOptionPane.showInputDialog(
+                    this,
+                    "Seleziona il torneo in cui eliminare giocatori:",
+                    "Elimina giocatori",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    torneoOptions,
+                    torneoOptions[0]
+            );
+            if (selectedTorneo == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Operazione annullata.",
+                        "Informazione",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            // Estrai il codice
+            int torneoCode = Integer.parseInt(selectedTorneo.split(" - ")[0].trim());
+
+            // 2. Recupera il tabellone e lo stato iniziale dei giocatori
+            Tabellone tabellone = cardClash.visualizzaTabellone(torneoCode);
+            if (tabellone == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Impossibile visualizzare il tabellone per questo torneo.",
+                        "Errore",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Salviamo i giocatori iniziali in una HashMap per poterli ripristinare in caso di errore
+            Map<String, Giocatore> giocatoriIniziali = new HashMap<>();
+            for (Giocatore g : cardClash.getTorneoCorrente().getGiocatori().values()) {
+                giocatoriIniziali.put(g.getEmail(), g);
+            }
+
+            // Mostra il tabellone iniziale
+            mostraTabellone(tabellone, "Tabellone Iniziale", torneoCode);
+
+            // 3. Loop di rimozione giocatori
+            while (true) {
+                int choice = JOptionPane.showConfirmDialog(
+                        this,
+                        "Vuoi rimuovere un giocatore?",
+                        "Elimina giocatore",
+                        JOptionPane.YES_NO_OPTION
+                );
+                if (choice != JOptionPane.YES_OPTION) {
+                    break;
+                }
+
+                // Richiedi l'email del giocatore da rimuovere
+                String emailToRemove = JOptionPane.showInputDialog(
+                        this,
+                        "Inserisci l'email del giocatore da eliminare:"
+                );
+                if (emailToRemove == null || emailToRemove.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this,
+                            "Nessuna email inserita, annullo l'operazione.",
+                            "Errore",
+                            JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+
+                // Controlla se il giocatore è presente
+                boolean giocatorePresente = tabellone.getPartite().values().stream()
+                        .anyMatch(partita -> (partita.getGiocatore1() != null && partita.getGiocatore1().getEmail().equals(emailToRemove))
+                        || (partita.getGiocatore2() != null && partita.getGiocatore2().getEmail().equals(emailToRemove)));
+
+                if (!giocatorePresente) {
+                    JOptionPane.showMessageDialog(this,
+                            "Il giocatore con l'email inserita non è presente nel tabellone.",
+                            "Errore",
+                            JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+
+                // 4. Elimina giocatore
+                cardClash.eliminaGiocatore(emailToRemove);
+            }
+
+            // 5. Controlla se il numero di giocatori rimasti è una potenza di due
+            int numGiocatori = cardClash.getTorneoCorrente().getGiocatori().size();
+            if (!isPotenzaDiDue(numGiocatori)) {
+                // Ripristina i giocatori originali
+                cardClash.getTorneoCorrente().setGiocatori(new HashMap<>(giocatoriIniziali));
+                JOptionPane.showMessageDialog(this,
+                        "Errore! Il numero di giocatori rimasti (" + numGiocatori + ") non è una potenza di due.\n"
+                        + "L'eliminazione è stata annullata e i giocatori originali sono stati ripristinati.",
+                        "Errore",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 6. Aggiorna tabellone e punteggi SOLO se il numero è corretto
+            cardClash.aggiornaTabellone();
+            cardClash.aggiornaPunteggio();
+
+            Tabellone newTabellone = cardClash.getTorneoCorrente().getTabellone();
+            mostraTabellone(newTabellone, "Tabellone Aggiornato", torneoCode);
+        }
+
+        // Funzione di supporto per verificare se un numero è una potenza di due
+        private boolean isPotenzaDiDue(int n) {
+            return (n > 0) && ((n & (n - 1)) == 0);
+        }
+
+        private void mostraTabellone(Tabellone tabellone, String title, Integer codTorneo) {
+            String[] columnNames = {"codPartita", "Giocatore1", "Punti G1", "Giocatore2", "Punti G2"};
+            Object[][] data = new Object[tabellone.getPartite().size()][5];
+
+            int row = 0;
+            for (Map.Entry<Integer, Partita> entry : tabellone.getPartite().entrySet()) {
+                Partita partita = entry.getValue();
+                Giocatore g1 = partita.getGiocatore1();
+                Giocatore g2 = partita.getGiocatore2();
+
+                data[row][0] = entry.getKey();  // Codice partita
+                data[row][1] = (g1 != null) ? g1.getEmail() : "N/A";
+                data[row][2] = (g1 != null) ? g1.getPunteggio(codTorneo) : "N/A";  // Mostra il punteggio
+                data[row][3] = (g2 != null) ? g2.getEmail() : "N/A";
+                data[row][4] = (g2 != null) ? g2.getPunteggio(codTorneo) : "N/A";  // Mostra il punteggio
+                row++;
+            }
+
+            JTable table = new JTable(data, columnNames);
+
+            // Se il tabellone non è ancora confermato, non mostriamo il codice
+            Integer tabCode = tabellone.getCodice();
+            String codiceTabellone = (tabCode != null) ? tabCode.toString() : "non confermato";
+
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.add(new JLabel("Tabellone (" + codiceTabellone + ")"), BorderLayout.NORTH);
+            panel.add(new JScrollPane(table), BorderLayout.CENTER);
+
+            JOptionPane.showMessageDialog(this, panel, title, JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -453,7 +759,7 @@ public class CardClashGUI extends JFrame {
         private JTextField dataField;
         private JTextField orarioField;
         private JTextField luogoField;
-        // Campo formato rimosso: verrà richiesto tramite popup
+        // Campo formato rimosso: verrà richiesto tramite popup con scelta a tendina
         private JButton creaButton;
         private JButton backButton;
         private JButton confermaButton; // Bottone aggiuntivo per confermare la creazione
@@ -567,23 +873,38 @@ public class CardClashGUI extends JFrame {
                 return;
             }
 
-            // Popup per inserire il codice del formato
-            String formatoInput = JOptionPane.showInputDialog(this, "Inserisci il codice del formato:");
-            if (formatoInput == null || formatoInput.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Il formato deve essere inserito!", "Errore",
-                        JOptionPane.ERROR_MESSAGE);
+            // Popup per selezionare il formato tramite scelta a tendina
+            Map<Integer, FormatoTorneo> formati = cardClash.getFormati();
+            if (formati == null || formati.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Non sono disponibili formati per il torneo!",
+                        "Errore", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            try {
-                int formatoCodice = Integer.parseInt(formatoInput.trim());
-                cardClash.selezionaFormato(formatoCodice);
-                if (cardClash.getTorneoCorrente().getFormato() == null) {
-                    JOptionPane.showMessageDialog(this, "Formato non trovato!", "Errore", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Il formato deve essere un codice numerico!", "Errore",
-                        JOptionPane.ERROR_MESSAGE);
+            String[] formatoOptions = new String[formati.size()];
+            int index = 0;
+            for (Integer codice : formati.keySet()) {
+                FormatoTorneo f = formati.get(codice);
+                // Mostriamo anche il gioco tra parentesi
+                formatoOptions[index++] = codice + " - " + f.getNome() + " (" + f.getGioco() + ")";
+            }
+            String selectedFormato = (String) JOptionPane.showInputDialog(
+                    this,
+                    "Seleziona il formato del torneo:",
+                    "Selezione Formato",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    formatoOptions,
+                    formatoOptions[0]
+            );
+            if (selectedFormato == null) {
+                JOptionPane.showMessageDialog(this, "Selezione del formato annullata!", "Errore", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            String[] partsFormato = selectedFormato.split(" - ");
+            int formatoCodice = Integer.parseInt(partsFormato[0].trim());
+            cardClash.selezionaFormato(formatoCodice);
+            if (cardClash.getTorneoCorrente().getFormato() == null) {
+                JOptionPane.showMessageDialog(this, "Formato non trovato!", "Errore", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 

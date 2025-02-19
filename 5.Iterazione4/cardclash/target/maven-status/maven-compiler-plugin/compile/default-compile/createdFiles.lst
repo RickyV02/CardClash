@@ -4,6 +4,7 @@ com\cardclash\FormatoTorneo1v1.class
 com\cardclash\FormatoTorneoPauper.class
 com\cardclash\Giocatore.class
 com\cardclash\CardClashGUI$OrganizerPanel.class
+com\cardclash\TipoMazzoEsistenteException.class
 com\cardclash\Tabellone.class
 com\cardclash\FormatoTorneoMonotype.class
 com\cardclash\FormatoTorneoPauper$1.class

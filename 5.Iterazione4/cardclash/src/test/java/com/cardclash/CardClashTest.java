@@ -128,7 +128,7 @@ public class CardClashTest {
         assertTrue(cardClash.mostraTorneiDisponibili().contains(t3));
         assertTrue(cardClash.mostraTorneiDisponibili().contains(t4));
 
-        cardClash.creaTorneo("Torneo 5", LocalDate.of(2026, 12, 13), "14:00", "Luogo 4");
+        cardClash.creaTorneo("Torneo 5", LocalDate.of(2026, 12, 16), "14:00", "Luogo 4");
         Torneo t5 = cardClash.getTorneoCorrente();
         t5.setFormato(f);
         cardClash.confermaCreazione();
@@ -338,12 +338,12 @@ public class CardClashTest {
     @Test
     public void testGetTorneiDaConcludere() throws DataGiaPresenteException {
         // Crea il torneo A (non terminato)
-        cardClash.creaTorneo("Torneo A", LocalDate.now(), "12:00", "Roma");
+        cardClash.creaTorneo("Torneo A", LocalDate.of(2025, 01, 12), "12:00", "Roma");
         Torneo t1 = cardClash.getTorneoCorrente();
         cardClash.confermaCreazione();
 
         // Crea il torneo B e lo conclude
-        cardClash.creaTorneo("Torneo B", LocalDate.now(), "13:00", "Milano");
+        cardClash.creaTorneo("Torneo B", LocalDate.of(2026, 01, 12), "12:00", "Roma");
         Torneo t2 = cardClash.getTorneoCorrente();
         cardClash.confermaCreazione();
         t2.concludiTorneo();

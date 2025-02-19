@@ -32,10 +32,12 @@ public class CardClash {
         FormatoTorneo formato1 = new FormatoTorneoPauper(1, "Pauper", Gioco.MAGIC, 16, 2.0f, 3.0f);
         FormatoTorneo formato2 = new FormatoTorneoMonotype(2, "Monotype", Gioco.POKEMON, 16, 2.0f, 3.0f);
         FormatoTorneo formato3 = new FormatoTorneo1v1(3, "1v1", Gioco.YUGIOH, 16, 1.0f, 3.0f);
+        FormatoTorneo formato4 = new FormatoTorneo1v1(4, "1v1", Gioco.MAGIC, 16, 1.0f, 3.0f);
 
         formati.put(formato1.getCodice(), formato1);
         formati.put(formato2.getCodice(), formato2);
         formati.put(formato3.getCodice(), formato3);
+        formati.put(formato4.getCodice(), formato4);
 
         System.out.println("Formati di torneo caricati con successo!");
     }
@@ -171,7 +173,13 @@ public class CardClash {
     }
 
     public void inserimentoTipoMazzo(String nome) {
-        formatoCorrente.inserisciTipoMazzo(nome);
+        //Estensione 4.B implementata
+        try {
+            formatoCorrente.inserisciTipoMazzo(nome);
+        } catch (TipoMazzoEsistenteException e) {
+            System.err.println(e.getMessage());
+            formatoCorrente = null;
+        }
     }
 
     public void confermaInserimentoTipo() {
@@ -211,8 +219,12 @@ public class CardClash {
     }
 
     public void aggiornaTabellone() {
-        torneoCorrente.aggiornaTabellone();
-        torneoCorrente.setTabellone();
+        try {
+            torneoCorrente.aggiornaTabellone();
+        } catch (GiocatoriNotPotenzaDiDueException e) {
+            System.err.println(e.getMessage());
+        }
+        torneoCorrente.setTabellone(); //in caso di errore, rimane invariato
     }
 
     public void aggiornaPunteggio() {

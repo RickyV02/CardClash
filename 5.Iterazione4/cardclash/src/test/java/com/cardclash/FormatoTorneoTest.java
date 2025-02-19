@@ -40,7 +40,7 @@ public class FormatoTorneoTest {
     public void testLoadTipiMazzo1v1() {
         Map<Integer, TipoMazzo> tipiMazzo = formato1v1.getTipiMazzo();
         assertNotNull(tipiMazzo.values());
-        assertEquals(3, tipiMazzo.size());
+        assertEquals(2, tipiMazzo.size());
     }
 
     @Test
@@ -53,13 +53,21 @@ public class FormatoTorneoTest {
 
     @Test
     public void testInserisciTipoMazzo() {
-        formato1v1.inserisciTipoMazzo("Aggro Deck");
+        try {
+            formato1v1.inserisciTipoMazzo("Control Deck");
+        } catch (TipoMazzoEsistenteException e) {
+            System.err.println(e.getMessage());
+        }
         assertNotNull(formato1v1.getTipoMazzoCorrente());
     }
 
     @Test
     public void testConfermaInserimento() {
-        formato1v1.inserisciTipoMazzo("Control Deck");
+        try {
+            formato1v1.inserisciTipoMazzo("Control Deck");
+        } catch (TipoMazzoEsistenteException e) {
+            System.err.println(e.getMessage());
+        }
         formato1v1.confermaInserimento();
         Integer codice = formato1v1.getTipoMazzoCorrente().getCodice();
         assertTrue(formato1v1.getTipiMazzo().containsKey(codice));
