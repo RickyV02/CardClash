@@ -23,19 +23,18 @@ public class CardClashGUI extends JFrame {
             setSize(900, 600);
             setLocationRelativeTo(null);
             cardClash = CardClash.getInstance();
-
             System.out.println("Inizio il caricamento dei dati...");
-
-            PersistenceHandler.loadUsers(cardClash);
-            System.out.println("Utenti caricati correttamente.");
-
-            PersistenceHandler.loadTournaments(cardClash);
-            System.out.println("Tornei caricati correttamente.");
 
             PersistenceHandler.loadFormats(cardClash);
             System.out.println("Formati caricati correttamente.");
-
             System.out.println("Formats: " + cardClash.getFormati().toString());
+
+            PersistenceHandler.loadUsers(cardClash);
+            System.out.println("Utenti caricati correttamente.");
+            
+            PersistenceHandler.loadTournaments(cardClash);
+            System.out.println("Tornei caricati correttamente.");
+            System.out.println("Tornei: " + cardClash.getTornei().toString());
 
             cardLayout = new CardLayout();
             containerPanel = new JPanel(cardLayout);

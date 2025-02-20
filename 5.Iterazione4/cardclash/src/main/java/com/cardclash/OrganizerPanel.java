@@ -1,10 +1,19 @@
 package com.cardclash;
 
-import java.awt.GridLayout;
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.time.LocalDate;
-import java.util.*;
-import javax.swing.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 public class OrganizerPanel extends JPanel {
 
@@ -249,7 +258,16 @@ public class OrganizerPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Operazione annullata.", "Informazione", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
+
+        //Estensioni 8.a e 8.b implementate
         int torneoCode = Integer.parseInt(selectedTorneo.split(" - ")[0].trim());
+        if (parentFrame.cardClash.getTornei().get(torneoCode).getTabellone() == null) {
+            JOptionPane.showMessageDialog(this, "Il torneo non è ancora iniziato!", "Errore", JOptionPane.ERROR_MESSAGE);
+            return;
+        } else if (parentFrame.cardClash.getTornei().get(torneoCode).getTabellone().getGiocatori().size() != 1) {
+            JOptionPane.showMessageDialog(this, "Il torneo non è ancora finito!", "Errore", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         parentFrame.cardClash.aggiornaELO(torneoCode);
         parentFrame.cardClash.setVincitore();
         JOptionPane.showMessageDialog(this, "Le informazioni sono state aggiornate correttamente!", "Successo", JOptionPane.INFORMATION_MESSAGE);

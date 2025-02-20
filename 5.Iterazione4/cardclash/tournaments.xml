@@ -27,4 +27,18 @@
         <luogo>puzzo2</luogo>
         <codFormato>1</codFormato>
     </torneo>
-<torneo><nome>asf</nome><data>2027-09-10</data><orario>10:00</orario><luogo>knvka</luogo><codFormato>4</codFormato></torneo></tornei>
+    <torneo>
+        <nome>asf</nome>
+        <data>2027-09-10</data>
+        <orario>10:00</orario>
+        <luogo>knvka</luogo>
+        <codFormato>4</codFormato>
+    </torneo>
+    <torneo>
+        <nome>asfsa</nome>
+        <data>2026-07-08</data>
+        <orario>10:00</orario>
+        <luogo>ciao</luogo>
+        <codFormato>123</codFormato>
+    </torneo>
+<torneo><nome>provafinale</nome><data>2027-09-07</data><orario>10:00</orario><luogo>puzzolix</luogo><codFormato>3</codFormato></torneo></tornei>

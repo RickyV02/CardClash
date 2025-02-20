@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <formati>
-    <formato codice="7" gioco="MAGIC" nome="formatoProva" numMaxGiocatori="16"
-        penaltyScore="5.0" victoryScore="4.0" />
+
+    <formato codice="7" gioco="MAGIC" nome="formatoProva" numMaxGiocatori="16" penaltyScore="5.0"
+        victoryScore="4.0" />
+
+    <formato codice="123" gioco="POKEMON" nome="gg" numMaxGiocatori="16" penaltyScore="4.0"
+        victoryScore="6.0" />
 </formati>

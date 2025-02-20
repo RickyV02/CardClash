@@ -83,44 +83,47 @@ public class PersistenceHandler {
                 LocalDate data = LocalDate.parse(dataStr);
                 try {
                     cardClash.creaTorneo(nome, data, orarioStr, luogo);
-                    cardClash.selezionaFormato(Integer.parseInt(codiceStr));
+                    cardClash.selezionaFormato(Integer.valueOf(codiceStr));
                     cardClash.confermaCreazione();
                 } catch (Exception e) {
                     System.out.println("Errore nella creazione del torneo");
                 }
             }
 
-            System.out.println("Tornei caricati: " + cardClash.getTornei().toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static void loadFormats(CardClash cardClash) {
-        try {
-            File file = new File(FORMATS_FILE);
-            if (!file.exists()) {
-                System.out.println("File formats.xml non trovato, nessun formato verrà caricato.");
-                return;
-            }
+        File file = new File(FORMATS_FILE);
+        if (!file.exists()) {
+            System.out.println("File " + FORMATS_FILE + " non trovato, nessun formato verrà caricato.");
+            return;
+        }
 
+        try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(file);
+            doc.getDocumentElement().normalize();
 
             NodeList formatoNodes = doc.getElementsByTagName("formato");
             for (int i = 0; i < formatoNodes.getLength(); i++) {
                 Element formatoElem = (Element) formatoNodes.item(i);
+                try {
+                    Integer codice = Integer.parseInt(formatoElem.getAttribute("codice"));
+                    String nome = formatoElem.getAttribute("nome");
+                    String giocoString = formatoElem.getAttribute("gioco");
+                    Integer numMaxGiocatori = Integer.parseInt(formatoElem.getAttribute("numMaxGiocatori"));
+                    Float victoryScore = Float.parseFloat(formatoElem.getAttribute("victoryScore"));
+                    Float penaltyScore = Float.parseFloat(formatoElem.getAttribute("penaltyScore"));
 
-                Integer codice = Integer.parseInt(formatoElem.getAttribute("codice"));
-                String nome = formatoElem.getAttribute("nome");
-                String giocoString = formatoElem.getAttribute("gioco");
-                Integer numMaxGiocatori = Integer.parseInt(formatoElem.getAttribute("numMaxGiocatori"));
-                Float victoryScore = Float.parseFloat(formatoElem.getAttribute("victoryScore"));
-                Float penaltyScore = Float.parseFloat(formatoElem.getAttribute("penaltyScore"));
-
-                cardClash.creaNuovoFormato(codice, nome, giocoString, numMaxGiocatori, victoryScore, penaltyScore);
-                cardClash.confermaFormato();
+                    cardClash.creaNuovoFormato(codice, nome, giocoString, numMaxGiocatori, victoryScore, penaltyScore);
+                    cardClash.confermaFormato();
+                } catch (GiocoNonSupportatoException e) {
+                    System.err.println("Errore nel caricamento di un formato: " + e.getMessage());
+                }
             }
 
             System.out.println("Formati caricati correttamente da " + FORMATS_FILE);
@@ -130,14 +133,13 @@ public class PersistenceHandler {
     }
 
     public static void saveFormat(FormatoTorneo formato) {
+        File file = new File(FORMATS_FILE);
         try {
-            File file = new File(FORMATS_FILE);
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc;
             Element root;
 
-            // Se il file non esiste, creiamo un nuovo documento
             if (!file.exists()) {
                 doc = builder.newDocument();
                 root = doc.createElement("formati");
@@ -147,22 +149,24 @@ public class PersistenceHandler {
                 root = doc.getDocumentElement();
             }
 
-            // Crea l'elemento formato e lo aggiunge al file
+            String giocoString = formato.getGioco().name();
+
             Element formatoElem = createFormat(
                     doc,
                     formato.getCodice(),
                     formato.getNome(),
-                    formato.getGioco(),
+                    giocoString,
                     formato.getNumMaxGiocatori(),
                     formato.getVictoryScore(),
                     formato.getPenaltyScore()
             );
             root.appendChild(formatoElem);
 
-            // Scrive il documento aggiornato nel file
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+
             DOMSource source = new DOMSource(doc);
             StreamResult result = new StreamResult(file);
 
@@ -174,13 +178,12 @@ public class PersistenceHandler {
         }
     }
 
-    // Metodo per creare un elemento XML per un formato
-    private static Element createFormat(Document doc, int codice, String nome, Gioco gioco, int numMaxGiocatori, float victoryScore, float penaltyScore) {
+    private static Element createFormat(Document doc, int codice, String nome, String gioco, int numMaxGiocatori, float victoryScore, float penaltyScore) {
         Element formatoElem = doc.createElement("formato");
 
         formatoElem.setAttribute("codice", String.valueOf(codice));
         formatoElem.setAttribute("nome", nome);
-        formatoElem.setAttribute("gioco", gioco.toString());
+        formatoElem.setAttribute("gioco", gioco);
         formatoElem.setAttribute("numMaxGiocatori", String.valueOf(numMaxGiocatori));
         formatoElem.setAttribute("victoryScore", String.valueOf(victoryScore));
         formatoElem.setAttribute("penaltyScore", String.valueOf(penaltyScore));
