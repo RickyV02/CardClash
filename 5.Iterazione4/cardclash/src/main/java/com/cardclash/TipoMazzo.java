@@ -11,7 +11,6 @@ public class TipoMazzo {
         this.nome = nome;
     }
 
-    // Getter per il codice
     public Integer getCodice() {
         return codice;
     }
@@ -21,17 +20,14 @@ public class TipoMazzo {
         this.codice = random.nextInt(999999);
     }
 
-    // Setter per il codice
     public void setCodice() {
         this.generaCodice();
     }
 
-    // Getter per il nome
     public String getNome() {
         return nome;
     }
 
-    // Setter per il nome
     public void setNome(String nome) {
         this.nome = nome;
     }

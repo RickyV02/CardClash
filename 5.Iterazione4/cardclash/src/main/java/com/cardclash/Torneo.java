@@ -47,7 +47,6 @@ public class Torneo {
         this.generaCodice();
     }
 
-    // Getter per il codice
     public Integer getCodice() {
         return codice;
     }
@@ -60,12 +59,10 @@ public class Torneo {
         return terminato;
     }
 
-    // Setter per il formato
     public void setFormato(FormatoTorneo formato) {
         this.formato = formato;
     }
 
-    // Getter per il formato
     public FormatoTorneo getFormato() {
         return formato;
     }
@@ -89,12 +86,10 @@ public class Torneo {
         return (n != 0) && ((n & (n - 1)) == 0);
     }
 
-    // Metodo per aggiungere un mazzo (con codice come chiave)
     public void aggiungiMazzo(Integer codice, Mazzo m) {
         mazziTorneo.put(codice, m);
     }
 
-    // Metodo per aggiungere un giocatore (con email come chiave)
     public void aggiungiGiocatore(String email, Giocatore g) {
         giocatori.put(email, g);
         addGiocatore();
@@ -174,7 +169,6 @@ public class Torneo {
         numGiocatori++;
     }
 
-    // Metodo per ottenere un giocatore dato l'email
     public Giocatore getGiocatore(String email) {
         return giocatori.get(email);
     }
@@ -200,7 +194,6 @@ public class Torneo {
         return mazziTorneo;
     }
 
-    // Metodo per ottenere un mazzo dato il codice
     public Mazzo getMazzo(Integer codice) {
         return mazziTorneo.get(codice);
     }

@@ -14,7 +14,6 @@ public abstract class FormatoTorneo {
     private final Float victoryScore;
     private final Float penaltyScore;
 
-    // Costruttore aggiornato: il parametro "gioco" è di tipo Gioco
     public FormatoTorneo(Integer codice, String nome, Gioco gioco, Integer numGiocatori, Float victoryScore,
             Float penaltyScore) {
         this.codice = codice;
