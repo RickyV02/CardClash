@@ -23,7 +23,6 @@ public class PersistenceHandler {
     private static final String TOURNAMENTS_FILE = "tournaments.xml";
     private static final String FORMATS_FILE = "formats.xml";
 
-    // Carica gli utenti dal file XML
     public static void loadUsers(CardClash cardClash) {
         try {
             File file = new File(USER_FILE);
@@ -42,13 +41,13 @@ public class PersistenceHandler {
             NodeList users = doc.getElementsByTagName("user");
             for (int i = 0; i < users.getLength(); i++) {
                 Element user = (Element) users.item(i);
-                String role = user.getAttribute("role");
                 String nome = user.getElementsByTagName("nome").item(0).getTextContent();
                 String email = user.getElementsByTagName("email").item(0).getTextContent();
                 String password = user.getElementsByTagName("password").item(0).getTextContent();
                 String nickname = user.getElementsByTagName("nickname").item(0).getTextContent();
                 String elo = user.getElementsByTagName("elo").item(0).getTextContent();
                 cardClash.registraGiocatore(nome, email, password, nickname);
+                cardClash.getGiocatoreCorrente().setELO(Float.valueOf(elo));
                 cardClash.confermaRegistrazione();
             }
         } catch (Exception e) {
@@ -112,12 +111,12 @@ public class PersistenceHandler {
             for (int i = 0; i < formatoNodes.getLength(); i++) {
                 Element formatoElem = (Element) formatoNodes.item(i);
                 try {
-                    Integer codice = Integer.parseInt(formatoElem.getAttribute("codice"));
+                    Integer codice = Integer.valueOf(formatoElem.getAttribute("codice"));
                     String nome = formatoElem.getAttribute("nome");
                     String giocoString = formatoElem.getAttribute("gioco");
-                    Integer numMaxGiocatori = Integer.parseInt(formatoElem.getAttribute("numMaxGiocatori"));
-                    Float victoryScore = Float.parseFloat(formatoElem.getAttribute("victoryScore"));
-                    Float penaltyScore = Float.parseFloat(formatoElem.getAttribute("penaltyScore"));
+                    Integer numMaxGiocatori = Integer.valueOf(formatoElem.getAttribute("numMaxGiocatori"));
+                    Float victoryScore = Float.valueOf(formatoElem.getAttribute("victoryScore"));
+                    Float penaltyScore = Float.valueOf(formatoElem.getAttribute("penaltyScore"));
 
                     cardClash.creaNuovoFormato(codice, nome, giocoString, numMaxGiocatori, victoryScore, penaltyScore);
                     cardClash.confermaFormato();
@@ -191,7 +190,6 @@ public class PersistenceHandler {
         return formatoElem;
     }
 
-    // Crea utenti di default e salva il file XML
     public static void createDefaultUsers() {
         try {
             File file = new File(USER_FILE);
@@ -207,10 +205,8 @@ public class PersistenceHandler {
             Element root = doc.createElement("users");
             doc.appendChild(root);
 
-            // Crea un utente di default (admin)
             root.appendChild(createUser(doc, "admin", "admin", "admin@gmail.com", hashPassword("admin123"), "admin"));
 
-            // Scrittura del file XML
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
@@ -223,7 +219,6 @@ public class PersistenceHandler {
         }
     }
 
-    // Crea un elemento utente con ruolo, email e password
     private static Element createUser(Document doc, String role, String nome, String email, String password,
             String nickname) {
         Element user = doc.createElement("user");
@@ -252,7 +247,6 @@ public class PersistenceHandler {
         return user;
     }
 
-    // Autentica l'utente confrontando l'email e la password (hashed)
     public static String authenticate(String email, String password) {
         try {
             File file = new File(USER_FILE);
@@ -270,7 +264,6 @@ public class PersistenceHandler {
                 String storedEmail = user.getElementsByTagName("email").item(0).getTextContent();
                 String storedPassword = user.getElementsByTagName("password").item(0).getTextContent();
 
-                // Verifica che email e password corrispondano (password hashed)
                 if (storedEmail.equals(email) && storedPassword.equals(hashPassword(password))) {
                     return user.getAttribute("role");
                 }
@@ -281,7 +274,6 @@ public class PersistenceHandler {
         return null;
     }
 
-    // Crea l'hash della password
     private static String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -300,7 +292,6 @@ public class PersistenceHandler {
         }
     }
 
-    // Registra un nuovo utente nel file XML
     public static void registerUser(String role, String nome, String email, String password, String nickname) {
         try {
             File file = new File(USER_FILE);
@@ -308,7 +299,6 @@ public class PersistenceHandler {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc;
 
-            // Se il file non esiste, creiamo uno nuovo con utenti di default
             if (!file.exists()) {
                 createDefaultUsers();
                 doc = builder.parse(file);
@@ -316,11 +306,9 @@ public class PersistenceHandler {
                 doc = builder.parse(file);
             }
 
-            // Aggiungi il nuovo utente
             Element root = doc.getDocumentElement();
             root.appendChild(createUser(doc, role, nome, email, hashPassword(password), nickname));
 
-            // Scrittura del file XML aggiornato
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
@@ -349,11 +337,10 @@ public class PersistenceHandler {
                 doc = builder.parse(file);
                 root = doc.getDocumentElement();
             }
-            // Crea l'elemento XML per il torneo e aggiungilo al documento
+
             Element torneoElem = createTournamentElement(doc, torneo);
             root.appendChild(torneoElem);
 
-            // Scrive il documento aggiornato su file
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
@@ -366,7 +353,6 @@ public class PersistenceHandler {
         }
     }
 
-    // Crea un elemento XML per rappresentare il torneo
     private static Element createTournamentElement(Document doc, Torneo torneo) {
         Element torneoElement = doc.createElement("torneo");
 
@@ -394,4 +380,47 @@ public class PersistenceHandler {
 
         return torneoElement;
     }
+
+    public static void updateUserElo(String email, float newElo) {
+        try {
+            File file = new File(USER_FILE);
+            if (!file.exists()) {
+                System.out.println("File " + USER_FILE + " non trovato.");
+                return;
+            }
+
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(file);
+
+            NodeList users = doc.getElementsByTagName("user");
+            boolean found = false;
+            for (int i = 0; i < users.getLength(); i++) {
+                Element user = (Element) users.item(i);
+                String storedEmail = user.getElementsByTagName("email").item(0).getTextContent();
+                if (storedEmail.equals(email)) {
+                    Element eloElem = (Element) user.getElementsByTagName("elo").item(0);
+                    eloElem.setTextContent(String.valueOf(newElo));
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                System.out.println("Utente con email " + email + " non trovato.");
+                return;
+            }
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(file);
+            transformer.transform(source, result);
+
+            System.out.println("ELO aggiornato per l'utente con email: " + email);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

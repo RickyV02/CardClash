@@ -269,6 +269,10 @@ public class OrganizerPanel extends JPanel {
             return;
         }
         parentFrame.cardClash.aggiornaELO(torneoCode);
+        List<Giocatore> giocatori = parentFrame.cardClash.getTornei().get(torneoCode).getTabellone().getGiocatori();
+        for (Giocatore giocatore : giocatori) {
+            PersistenceHandler.updateUserElo(giocatore.getEmail(), giocatore.getELO());
+        }
         parentFrame.cardClash.setVincitore();
         JOptionPane.showMessageDialog(this, "Le informazioni sono state aggiornate correttamente!", "Successo", JOptionPane.INFORMATION_MESSAGE);
     }
