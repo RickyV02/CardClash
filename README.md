@@ -1,4 +1,4 @@
-# Struttura delle directory dell'applicazione
+# CardClash
 
 Questo repository è stato organizzato suddividendo la documentazione, i diagrammi Astah e il codice sorgente in base alle diverse fasi (o iterazioni) del progetto. Di seguito una breve descrizione delle cartelle principali:
 
@@ -17,13 +17,12 @@ Questo repository è stato organizzato suddividendo la documentazione, i diagram
 - **5.iterazione4**  
   Include la documentazione, i diagrammi e il codice relativi alla quarta iterazione (ultima fase di sviluppo). Si consiglia chiaramente di visualizzare questa versione.
 
-- **Eseguibile .JAR**
+- **Eseguibile .jar**
   La versione finale dell'applicazione relativa all'ultima iterazione effettuata, insieme ai file .xml per implementare una prima versione di persistenza dei dati.
 
 - **Appendice**  
   All’interno di questa cartella si trovano:
+  - La documentazione completa relativa all'applicazione, ossia l'elaborato finale che descrive il lavoro fatto durante le iterazioni.
   - L’ultima versione dei diagrammi Astah (aggiornati e completi).
   - I documenti della fase di pre-ideazione (precedenti a “1.ideazione”).
   - Il logo dell’applicazione.
-
-Nel file **README.md** corrente è riportata una descrizione sintetica di come sono strutturati i contenuti all’interno di ogni directory. In questo modo, è possibile navigare facilmente tra le diverse fasi di sviluppo, consultare i documenti e visualizzare i diagrammi più aggiornati. 
