@@ -1,6 +1,6 @@
 # CardClash
 
-Questo repository è stato organizzato suddividendo la documentazione, i diagrammi Astah e il codice sorgente in base alle diverse fasi (o iterazioni) del progetto. Di seguito una breve descrizione delle cartelle principali:
+Questo repository è stato organizzato suddividendo la documentazione, i diagrammi Astah e il codice sorgente in base alle diverse iterazioni del progetto. Di seguito una breve descrizione delle cartelle principali:
 
 - **1.ideazione**  
   Contiene i primi documenti e materiali relativi alla fase di ideazione iniziale.
