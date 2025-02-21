@@ -20,6 +20,9 @@ Questo repository è stato organizzato suddividendo la documentazione, i diagram
 - **Eseguibile .jar**
   La versione finale dell'applicazione relativa all'ultima iterazione effettuata, insieme ai file .xml per implementare una prima versione di persistenza dei dati.
 
+- **Istruzioni per l'avvio**
+  Si consiglia di utilizzare uno degli account già creati per effettuare il login. In particolare, al momento esiste un solo account admin e diversi account utente. Le credenziali di accesso sono nel file "users.xml". Una volta effettuato l'accesso, in base al tipo di utente che si è, sarà caricata una dashboard con la quale usufruire di tutti i casi d'uso implementati al momento dell'esecuzione dall'applicazione.
+
 - **Appendice**  
   All’interno di questa cartella si trovano:
   - La documentazione completa relativa all'applicazione, ossia l'elaborato finale che descrive il lavoro fatto durante le iterazioni.

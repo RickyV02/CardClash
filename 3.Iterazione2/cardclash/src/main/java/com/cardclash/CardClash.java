@@ -199,7 +199,7 @@ public class CardClash {
         torneoCorrente.setTabellone();
     }
 
-    public void aggiornaPunteggio() {
+    public void aggiornaPunteggi() {
         FormatoTorneo f = torneoCorrente.getFormato();
         torneoCorrente.aggiornaPunteggi(f.getVictoryScore());
     }

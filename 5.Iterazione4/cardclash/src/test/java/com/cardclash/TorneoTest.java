@@ -1,18 +1,18 @@
 package com.cardclash;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 
 public class TorneoTest {
 
@@ -87,14 +87,45 @@ public class TorneoTest {
     }
 
     @Test
-    public void testIsAperto() {
+    public void testIsAperto() throws GiocatoriNotPotenzaDiDueException {
+        LocalDate oggi = LocalDate.now();
+        LocalTime adesso = LocalTime.now();
+
+        // Test 1: Torneo nel futuro, non pieno, senza tabellone -> deve essere aperto
         assertTrue(torneo.isAperto());
-        Torneo t2 = new Torneo("Torneo Aperto", LocalDate.of(2026, 5, 21), LocalTime.of(11, 0), "Milano");
-        t2.setFormato(torneo.getFormato());  // stessa configurazione, numMaxGiocatori=16
+
+        // Test 2: Torneo pieno -> non deve essere aperto
+        Torneo torneoMaxGiocatori = new Torneo("Torneo Pieno", LocalDate.of(2026, 5, 21), LocalTime.of(11, 0), "Milano");
+        torneoMaxGiocatori.setFormato(torneo.getFormato());
         for (int i = 0; i < 16; i++) {
-            t2.aggiungiGiocatore("g" + i + "@mail.com", new Giocatore("Giocatore" + i, "g" + i + "@mail.com", "pass", "nick" + i));
+            torneoMaxGiocatori.aggiungiGiocatore("g" + i + "@mail.com",
+                new Giocatore("Giocatore" + i, "g" + i + "@mail.com", "pass", "nick" + i));
         }
-        assertFalse(t2.isAperto());
+        assertFalse(torneoMaxGiocatori.isAperto());
+
+        // Test 3: Torneo nel passato -> non deve essere aperto
+        Torneo torneoPassato = new Torneo("Torneo Passato",
+            oggi.minusDays(1), LocalTime.of(11, 0), "Milano");
+        torneoPassato.setFormato(torneo.getFormato());
+        assertFalse(torneoPassato.isAperto());
+
+        // Test 4: Torneo oggi ma orario passato -> non deve essere aperto
+        Torneo torneoOggiPassato = new Torneo("Torneo Oggi Passato",
+            oggi, adesso.minusHours(1), "Milano");
+        torneoOggiPassato.setFormato(torneo.getFormato());
+        assertFalse(torneoOggiPassato.isAperto());
+
+        // Test 5: Torneo con tabellone già creato -> non deve essere aperto
+        Torneo torneoConTabellone = new Torneo("Torneo Con Tabellone",
+            LocalDate.of(2026, 5, 21), LocalTime.of(11, 0), "Milano");
+        torneoConTabellone.setFormato(torneo.getFormato());
+        for (int i = 0; i < 4; i++) {
+            torneoConTabellone.aggiungiGiocatore("g" + i + "@mail.com",
+                new Giocatore("Giocatore" + i, "g" + i + "@mail.com", "pass", "nick" + i));
+        }
+        torneoConTabellone.creaTabellone();
+        torneoConTabellone.confermaTabellone();
+        assertFalse(torneoConTabellone.isAperto());
     }
 
     @Test

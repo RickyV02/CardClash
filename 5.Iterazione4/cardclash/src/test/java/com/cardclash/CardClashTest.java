@@ -101,40 +101,67 @@ public class CardClashTest {
 
     @Test
     public void testMostraTorneiDisponibili() throws DataGiaPresenteException {
-        FormatoTorneo f = cardClash.getFormati().get(1);
-        // 1. Crea tornei con date passate
-        cardClash.creaTorneo("Torneo 1", LocalDate.of(2025, 01, 12), "10:00", "Luogo 1");
-        Torneo t1 = cardClash.getTorneoCorrente();
+        FormatoTorneo formato = cardClash.getFormati().get(1);
+        List<Torneo> torneiDisponibili;
+
+        // 1. Test tornei con date passate
+        cardClash.creaTorneo("Torneo Passato 1", LocalDate.of(2025, 1, 12), "10:00", "Luogo 1");
+        Torneo torneoPassato1 = cardClash.getTorneoCorrente();
         cardClash.selezionaFormato(1);
         cardClash.confermaCreazione();
-        cardClash.creaTorneo("Torneo 2", LocalDate.of(2025, 01, 13), "14:00", "Luogo 2");
-        Torneo t2 = cardClash.getTorneoCorrente();
+
+        cardClash.creaTorneo("Torneo Passato 2", LocalDate.of(2025, 1, 13), "14:00", "Luogo 2");
+        Torneo torneoPassato2 = cardClash.getTorneoCorrente();
         cardClash.selezionaFormato(1);
         cardClash.confermaCreazione();
 
-        assertFalse(cardClash.mostraTorneiDisponibili().contains(t1));
-        assertFalse(cardClash.mostraTorneiDisponibili().contains(t2));
+        torneiDisponibili = cardClash.mostraTorneiDisponibili();
+        assertFalse(torneiDisponibili.contains(torneoPassato1));
+        assertFalse(torneiDisponibili.contains(torneoPassato2));
 
-        // 2. Crea tornei con data futura
-        cardClash.creaTorneo("Torneo 3", LocalDate.of(2026, 12, 12), "10:00", "Luogo 3");
-        Torneo t3 = cardClash.getTorneoCorrente();
-        t3.setFormato(f);
-        cardClash.confermaCreazione();
-        cardClash.creaTorneo("Torneo 4", LocalDate.of(2026, 12, 13), "14:00", "Luogo 4");
-        Torneo t4 = cardClash.getTorneoCorrente();
-        t4.setFormato(f);
+        // 2. Test tornei futuri aperti
+        cardClash.creaTorneo("Torneo Futuro 1", LocalDate.of(2026, 12, 12), "10:00", "Luogo 3");
+        Torneo torneoFuturo1 = cardClash.getTorneoCorrente();
+        torneoFuturo1.setFormato(formato);
         cardClash.confermaCreazione();
 
-        assertTrue(cardClash.mostraTorneiDisponibili().contains(t3));
-        assertTrue(cardClash.mostraTorneiDisponibili().contains(t4));
-
-        cardClash.creaTorneo("Torneo 5", LocalDate.of(2026, 12, 16), "14:00", "Luogo 4");
-        Torneo t5 = cardClash.getTorneoCorrente();
-        t5.setFormato(f);
+        cardClash.creaTorneo("Torneo Futuro 2", LocalDate.of(2026, 12, 13), "14:00", "Luogo 4");
+        Torneo torneoFuturo2 = cardClash.getTorneoCorrente();
+        torneoFuturo2.setFormato(formato);
         cardClash.confermaCreazione();
-        t5.concludiTorneo();
-        assertFalse(cardClash.mostraTorneiDisponibili().contains(t5));
 
+        torneiDisponibili = cardClash.mostraTorneiDisponibili();
+        assertTrue(torneiDisponibili.contains(torneoFuturo1));
+        assertTrue(torneiDisponibili.contains(torneoFuturo2));
+
+        // 3. Test torneo terminato
+        cardClash.creaTorneo("Torneo Terminato", LocalDate.of(2026, 12, 16), "14:00", "Luogo 5");
+        Torneo torneoTerminato = cardClash.getTorneoCorrente();
+        torneoTerminato.setFormato(formato);
+        cardClash.confermaCreazione();
+        torneoTerminato.concludiTorneo();
+
+        torneiDisponibili = cardClash.mostraTorneiDisponibili();
+        assertFalse(torneiDisponibili.contains(torneoTerminato));
+
+        // 4. Test torneo futuro ma pieno
+        cardClash.creaTorneo("Torneo Pieno", LocalDate.of(2026, 12, 17), "14:00", "Luogo 6");
+        Torneo torneoPieno = cardClash.getTorneoCorrente();
+        torneoPieno.setFormato(formato);
+        cardClash.confermaCreazione();
+
+        int maxGiocatori = formato.getNumMaxGiocatori();
+        for (int i = 0; i < maxGiocatori; i++) {
+            torneoPieno.aggiungiGiocatore("g" + i + "@mail.com",
+                    new Giocatore("Giocatore" + i, "g" + i + "@mail.com", "pass", "nick" + i));
+        }
+
+        torneiDisponibili = cardClash.mostraTorneiDisponibili();
+        assertFalse(torneiDisponibili.contains(torneoPieno));
+
+        // 5. Verifica dimensione finale lista
+        int torneiAttesiDisponibili = 2; // solo torneoFuturo1 e torneoFuturo2 dovrebbero essere disponibili
+        assertEquals(torneiAttesiDisponibili, torneiDisponibili.size());
     }
 
     @Test
@@ -298,7 +325,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testAggiornaPunteggio() throws DataGiaPresenteException {
+    public void testAggiornaPunteggi() throws DataGiaPresenteException {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
         Torneo t = cardClash.getTorneoCorrente();
         Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
@@ -309,7 +336,7 @@ public class CardClashTest {
         cardClash.confermaCreazione();
         cardClash.creaTabellone(cardClash.getTorneoCorrente().getCodice());
         assertEquals(0.0f, g1.getPunteggio(t.getCodice()), 0.01);
-        cardClash.aggiornaPunteggio();
+        cardClash.aggiornaPunteggi();
         assertEquals(2.0f, g1.getPunteggio(t.getCodice()), 0.01);
     }
 

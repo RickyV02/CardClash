@@ -227,7 +227,7 @@ public class CardClash {
         torneoCorrente.setTabellone(); //in caso di errore, rimane invariato
     }
 
-    public void aggiornaPunteggio() {
+    public void aggiornaPunteggi() {
         FormatoTorneo f = torneoCorrente.getFormato();
         torneoCorrente.aggiornaPunteggi(f.getVictoryScore());
     }

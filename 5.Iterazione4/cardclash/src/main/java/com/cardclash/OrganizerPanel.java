@@ -191,11 +191,11 @@ public class OrganizerPanel extends JPanel {
         if (finalSize == 1) {
             Giocatore vincitore = parentFrame.cardClash.getTorneoCorrente().getTabelloneCorrente().getGiocatori().iterator().next();
             JOptionPane.showMessageDialog(this, "Il torneo è concluso! Il vincitore è: " + vincitore.getNickname(), "Vincitore", JOptionPane.INFORMATION_MESSAGE);
-            parentFrame.cardClash.aggiornaPunteggio();
+            parentFrame.cardClash.aggiornaPunteggi();
             return;
         }
         parentFrame.cardClash.aggiornaTabellone();
-        parentFrame.cardClash.aggiornaPunteggio();
+        parentFrame.cardClash.aggiornaPunteggi();
         Tabellone newTabellone = parentFrame.cardClash.getTorneoCorrente().getTabellone();
         mostraTabellone(newTabellone, "Tabellone Aggiornato", torneoCode);
     }

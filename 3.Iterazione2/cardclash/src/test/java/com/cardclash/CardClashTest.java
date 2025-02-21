@@ -286,7 +286,7 @@ public class CardClashTest {
     }
 
     @Test
-    public void testAggiornaPunteggio() {
+    public void testAggiornaPunteggi() {
         cardClash.creaTorneo("Torneo Test", LocalDate.now(), "12:00", "Roma");
         Torneo t = cardClash.getTorneoCorrente();
         Giocatore g1 = new Giocatore("Mario Rossi", "mario@mail.com", "password123", "mario123");
@@ -297,7 +297,7 @@ public class CardClashTest {
         cardClash.confermaCreazione();
         cardClash.creaTabellone(cardClash.getTorneoCorrente().getCodice());
         assertEquals(0.0f, g1.getPunteggio(t.getCodice()), 1.0);
-        cardClash.aggiornaPunteggio();
+        cardClash.aggiornaPunteggi();
         assertEquals(2.0f, g1.getPunteggio(t.getCodice()), 1.0);
     }
 
