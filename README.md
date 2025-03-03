@@ -5,8 +5,8 @@ Questo repository è stato organizzato suddividendo la documentazione, i diagram
 - **1.ideazione**  
   Contiene i primi documenti e materiali relativi alla fase di ideazione iniziale.
 
-- **2.ideazione**  
-  Contiene ulteriori documenti di ideazione e approfondimenti successivi alla prima fase.
+- **2.iterazione1**  
+  Include la documentazione, i diagrammi e il codice della prima iterazione.
 
 - **3.iterazione2**  
   Include la documentazione, i diagrammi e il codice prodotti durante la seconda iterazione di sviluppo.
